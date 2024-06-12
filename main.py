@@ -44,11 +44,14 @@ def empleado(id):
 def front_agregar_registro():
     return render_template('registros/nuevo_registro.html')
 
+
 @app.route('/registros', methods=['GET'])
 def front_agregar_registro():
     return render_template('registros/nuevo_registro.html')
 
 # Endpoints Registros
+
+
 @app.route('/api/v1/registros', methods=['GET'])
 def obtener_registros():
     return 'todos los registros'
@@ -83,7 +86,11 @@ def obtener_empleado(id):
 
 @app.route('/api/v1/empleados', methods=['GET'])
 def obtener_empleados():
-    return 'todos los empleados'
+    try:
+        print("code")
+
+    except Exception as error:
+        return jsonify({'message': 'Error interno del servidor'}), 500
 
 
 @app.rotue('/api/v1/empleados', methods=['POST'])
