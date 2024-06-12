@@ -8,10 +8,13 @@ port = 5000
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+#Constantes
 MAXIMO_REGISTROS_POR_DEFECTO = 10
 
+
+#Front
 @app.route('/')
-def hola_mundo():
+def indice():
     return render_template('index.html')
 
 @app.route('/empleados')
@@ -26,15 +29,13 @@ def empleados():
     ]
     return render_template('empleados/empleados.html', empleados=empleados)
 
-@app.route('/empleado/<int:id>')
+@app.route('/empleados/<int:id>')
 def empleado(id):
     empleado = {
         'nombre': 'juan',
         'id' : id
     }
     return render_template('empleados/empleado.html', empleado=empleado)
-
-
 
 #Endpoints Registros
 @app.route('api/v1/registros', methods=['GET'])
@@ -79,10 +80,7 @@ def eliminar_empleado():
 def actualizar_empleado(id):
     return 'actualizar empleado'
 
-
-
 db.init_app(app)
-
 
 # @app.before_first_request
 # def iniciar_db():
