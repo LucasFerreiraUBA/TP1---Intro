@@ -14,7 +14,7 @@ class Empleado(db.Model):
     
 class Registro(db.Model):
     __tablename__ = 'registros'
-    id = db.Column()
+    id = db.Column(db.Integer, primary_key=True)
     horario = db.Column(db.DateTime, nullable=False)
     empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
     es_entrada = db.Column(db.Boolean, nullable = False, default = True)
