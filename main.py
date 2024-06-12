@@ -8,6 +8,7 @@ port = 5000
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+MAXIMO_REGISTROS_POR_DEFECTO = 10
 
 @app.route('/')
 def hola_mundo():
@@ -35,12 +36,12 @@ def empleado(id):
 
 
 
-#Endpoints registros
-@app.route('api/v1/registros')
+#Endpoints Registros
+@app.route('api/v1/registros', methods=['GET'])
 def obtener_registros():
     return 'todos los registros'
 
-@app.route('api/v1/registros/<int:id>')
+@app.route('api/v1/registros/<int:id>', methods=['GET'])
 def obtener_registro(id):
     return 'un registro segun id'
 
@@ -56,13 +57,27 @@ def eliminar_registro(id):
 def agregar_registro(id):
     return 'actualizar un registro'
 
+#Endpoints Empleados
 
+@app.route('api/v1/empleados/<int:id>', methods=['GET'])
+def obtener_empleado(id):
+    return 'un empleado'
 
+@app.route('api/v1/empleados',methods=['GET'])
+def obtener_empleados():
+    return 'todos los empleados'
 
+@app.rotue('api/v1/empleados', methods=['POST'])
+def agregar_empleado():
+    return 'agregar empleado'
 
+@app.rotue('api/v1/empleados/<int:id>', methods=['DELETE'])
+def eliminar_empleado():
+    return 'eliminar empleado'
 
-
-
+@app.route('api/v1/empleados/<int:id>', methods=['PUT'])
+def actualizar_empleado(id):
+    return 'actualizar empleado'
 
 
 
