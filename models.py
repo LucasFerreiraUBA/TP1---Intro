@@ -11,6 +11,7 @@ class Empleado(db.Model):
     dni = db.Column(db.Integer, primary_key = True)
     horario_entrada = db.Column(db.Time, nullable=False)
     horario_salida = db.Column(db.Time, nullable=False)
+    registros = db.relationship("Registro")
     
 class Registro(db.Model):
     __tablename__ = 'registros'
