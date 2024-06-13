@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 
-from models import db
+from models import db, Empleado, Registro
 
 app = Flask(__name__, static_url_path='/templates')
 port = 5000
@@ -85,9 +85,28 @@ def obtener_empleado(id):
 
 
 @app.route('/api/v1/empleados', methods=['GET'])
-def obtener_empleados():
+def obtener_empleados(request):
     try:
-        print("code")
+        datos = request.json
+        maximo_registros = datos.get('maximo')
+
+        if not maximo_registros:
+            maximo_registros = MAXIMO_REGISTROS_POR_DEFECTO
+
+        empleados = Empleado.query.limit(maximo_registros).all()
+        lista_empleados = []
+
+        for empleado in empleados:
+            datos_empleado = {
+                'id': empleado.id,
+                'nombre': empleado.nombre,
+                # Falta agregar datos sobre llegadas tardes,etc.
+                'apellido': empleado.apellido
+            }
+
+            lista_empleados.append(datos_empleado)
+
+        return jsonify({'empleados': lista_empleados}), 200
 
     except Exception as error:
         return jsonify({'message': 'Error interno del servidor'}), 500
