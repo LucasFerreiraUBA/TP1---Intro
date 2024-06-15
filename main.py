@@ -54,27 +54,74 @@ def front_agregar_registro():
 
 @app.route('/api/v1/registros', methods=['GET'])
 def obtener_registros():
-    return 'todos los registros'
+    try:
+        registros = Registro.query.all()
+        registros_data = []
+        for registro in registro:
+            registro_data = {
+                'id' : registro.id,
+                'horario' : registro.horario,
+                'empleado_id' : registro.empleado_id,
+                'es_entrada' : registro.es_entrada,
+                'desfase' : registro.desfase,
+            }
+            registros_data.append(registro_data)
+        return jsonify(registros_data)
+    except:
+        return jsonify({"error": "No se pudo obtener los registros"}), 400
 
 
 @app.route('/api/v1/registros/<int:id>', methods=['GET'])
 def obtener_registro(id):
-    return 'un registro segun id'
+    try:
+        registro = Registro.query.get(id)
+        registro_data = {
+            'id' : registro.id,
+            'horario' : registro.horario,
+            'empleado_id' : registro.empleado_id,
+            'es_entrada' : registro.es_entrada,
+            'desfase' : registro.desfase,
+        }
+        return jsonify(registro_data)
+    except:
+        return jsonify({"error": "Registro Inexistente"}), 400
 
 
 @app.route('/api/v1/registros', methods=['POST'])
-def agregar_registro(request):
-    return 'agregar un registro'
+def agregar_registro():
+    horario = request.json.get("horario")
+    empleado_id = request.json.get("empleado_id")
+    es_entrada = request.json.get("es_entrada")
+    desfase = request.json.get("desfase")
+    nuevo_registro = Registro(horario=horario, empleado_id=empleado_id, es_entrada=es_entrada, desfase=desfase)
+    db.session.add(nuevo_registro)
+    db.session.commit()
+    return jsonify({"msg" : "Agregado Exitosamente"}, 201)
 
 
 @app.route('/api/v1/registros/<int:id>', methods=['DELETE'])
 def eliminar_registro(id):
-    return 'eliminar un registro'
+    try:
+        registro = Registro.query.get(id)
+        db.session.delete(registro)
+        db.session.commit()
+        return jsonify({"msg" : "Borrado Exitosamente"}, 201)
+    except:
+        return jsonify({"msg" : "Registro desconocido"}, 400)
 
 
 @app.route('/api/v1/registros/<int:id>', methods=['PUT'])
 def agregar_registro(id):
-    return 'actualizar un registro'
+    try:
+        registro = Registro.query.get(id)
+        registro.horario = request.json.get("horario")
+        registro.empleado_id = request.json.get("empleado_id")
+        registro.es_entrada = request.json.get("es_entrada")
+        registro.desfase = request.json.get("desfase")
+        db.session.commit()
+        return jsonify({"msg" : "Actualizado Exitosamente"}, 201)
+    except:
+        return jsonify({"msg" : "Registro desconocido"}, 400)
 
 # Endpoints Empleados
 
