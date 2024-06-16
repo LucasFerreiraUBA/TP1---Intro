@@ -13,41 +13,41 @@ MAXIMO_REGISTROS_POR_DEFECTO = 10
 
 
 # Front
-@app.route('/', methods=['GET'])
-def indice():
-    return render_template('index.html')
+# @app.route('/', methods=['GET'])
+# def indice():
+#     return render_template('index.html')
 
 
-@app.route('/empleados', methods=['GET'])
-def empleados():
-    empleados = [
-        {
-            'nombre': 'juan'
-        },
-        {
-            'nombre': 'lucas'
-        }
-    ]
-    return render_template('empleados/empleados.html', empleados=empleados)
+# @app.route('/empleados', methods=['GET'])
+# def empleados():
+#     empleados = [
+#         {
+#             'nombre': 'juan'
+#         },
+#         {
+#             'nombre': 'lucas'
+#         }
+#     ]
+#     return render_template('empleados/empleados.html', empleados=empleados)
 
 
-@app.route('/empleados/<int:id>', methods=['GET'])
-def empleado(id):
-    empleado = {
-        'nombre': 'juan',
-        'id': id
-    }
-    return render_template('empleados/empleado.html', empleado=empleado)
+# @app.route('/empleados/<int:id>', methods=['GET'])
+# def empleado(id):
+#     empleado = {
+#         'nombre': 'juan',
+#         'id': id
+#     }
+#     return render_template('empleados/empleado.html', empleado=empleado)
 
 
-@app.route('/registros/agregar', methods=['GET'])
-def front_agregar_registro():
-    return render_template('registros/nuevo_registro.html')
+# @app.route('/registros/agregar', methods=['GET'])
+# def front_agregar_registro():
+#     return render_template('registros/nuevo_registro.html')
 
 
-@app.route('/registros', methods=['GET'])
-def front_agregar_registro():
-    return render_template('registros/nuevo_registro.html')
+# @app.route('/registros', methods=['GET'])
+# def front_agregar_registro():
+#     return render_template('registros/nuevo_registro.html')
 
 # Endpoints Registros
 
@@ -57,7 +57,7 @@ def obtener_registros():
     try:
         registros = Registro.query.all()
         registros_data = []
-        for registro in registro:
+        for registro in registros:
             registro_data = {
                 'id' : registro.id,
                 'horario' : registro.horario,
@@ -111,7 +111,7 @@ def eliminar_registro(id):
 
 
 @app.route('/api/v1/registros/<int:id>', methods=['PUT'])
-def agregar_registro(id):
+def modificar_registro(id):
     try:
         registro = Registro.query.get(id)
         registro.horario = request.json.get("horario")
@@ -125,53 +125,66 @@ def agregar_registro(id):
 
 # Endpoints Empleados
 
-
 @app.route('/api/v1/empleados/<int:id>', methods=['GET'])
 def obtener_empleado(id):
-    return 'un empleado'
-
-
-@app.route('/api/v1/empleados', methods=['GET'])
-def obtener_empleados(request):
     try:
-        datos = request.json
-        maximo_registros = datos.get('maximo')
-
-        if not maximo_registros:
-            maximo_registros = MAXIMO_REGISTROS_POR_DEFECTO
-
-        empleados = Empleado.query.limit(maximo_registros).all()
-        lista_empleados = []
-
-        for empleado in empleados:
-            datos_empleado = {
-                'id': empleado.id,
-                'nombre': empleado.nombre,
-                # Falta agregar datos sobre llegadas tardes,etc.
-                'apellido': empleado.apellido
+        empleados = Registro.query.all()
+        emple_data = []
+        for registro in registros:
+            registro_data = {
+                'id' : registro.id,
+                'horario' : registro.horario,
+                'empleado_id' : registro.empleado_id,
+                'es_entrada' : registro.es_entrada,
+                'desfase' : registro.desfase,
             }
-
-            lista_empleados.append(datos_empleado)
-
-        return jsonify({'empleados': lista_empleados}), 200
-
-    except Exception as error:
-        return jsonify({'message': 'Error interno del servidor'}), 500
+            registros_data.append(registro_data)
+        return jsonify(registros_data)
+    except:
+        return jsonify({"error": "No se pudo obtener los registros"}), 400
 
 
-@app.rotue('/api/v1/empleados', methods=['POST'])
-def agregar_empleado():
-    return 'agregar empleado'
+# @app.route('/api/v1/empleados', methods=['GET'])
+# def obtener_empleados(request):
+#     try:
+#         datos = request.json
+#         maximo_registros = datos.get('maximo')
+
+#         if not maximo_registros:
+#             maximo_registros = MAXIMO_REGISTROS_POR_DEFECTO
+
+#         empleados = Empleado.query.limit(maximo_registros).all()
+#         lista_empleados = []
+
+#         for empleado in empleados:
+#             datos_empleado = {
+#                 'id': empleado.id,
+#                 'nombre': empleado.nombre,
+#                 # Falta agregar datos sobre llegadas tardes,etc.
+#                 'apellido': empleado.apellido
+#             }
+
+#             lista_empleados.append(datos_empleado)
+
+#         return jsonify({'empleados': lista_empleados}), 200
+
+#     except Exception as error:
+#         return jsonify({'message': 'Error interno del servidor'}), 500
 
 
-@app.rotue('/api/v1/empleados/<int:id>', methods=['DELETE'])
-def eliminar_empleado():
-    return 'eliminar empleado'
+# @app.rotue('/api/v1/empleados', methods=['POST'])
+# def agregar_empleado():
+#     return 'agregar empleado'
 
 
-@app.route('/api/v1/empleados/<int:id>', methods=['PUT'])
-def actualizar_empleado(id):
-    return 'actualizar empleado'
+# @app.rotue('/api/v1/empleados/<int:id>', methods=['DELETE'])
+# def eliminar_empleado():
+#     return 'eliminar empleado'
+
+
+# @app.route('/api/v1/empleados/<int:id>', methods=['PUT'])
+# def actualizar_empleado(id):
+#     return 'actualizar empleado'
 
 
 db.init_app(app)
