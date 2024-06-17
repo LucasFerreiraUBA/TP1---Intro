@@ -1,6 +1,10 @@
-# TP1---Introducción al desarrollo de software
+# TP 1 - Intro. Software
 
-Integrantes:
-    Lucas Ferreira
-    Jose Luis Jarro
-    Juan Chaile
+## Integrantes 
+
+- Lucas Ferreira 
+- Jose Luis Jarro 
+- Juan Chaile
+
+## Proyecto
+Interfaz de empleados. Podes agregar, eliminar, editar empleados y sus registros. 
