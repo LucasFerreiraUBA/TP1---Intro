@@ -132,17 +132,22 @@ def modificar_registro(id):
 def obtener_empleado(id):
     try:
         empleado = Empleado.query.get(id)
+
+        if not empleado:
+            return jsonify({'message': 'no existe el empleado con el id dado'}), 400
+
         empleado_data = {
             'id': empleado.id,
             'nombre': empleado.nombre,
             'apellido': empleado.apellido,
             'dni': empleado.dni,
-            'horario_entrada': empleado.horario_entreda,
-            'horario_salida': empleado.horario_salida,
+            'horario_entrada': empleado.horario_entrada.strftime('%H:%M:%S'),
+            'horario_salida': empleado.horario_salida.strftime('%H:%M:%S'),
         }
+        
         return jsonify(empleado_data)
     except:
-        return jsonify({"error": "No se pudo obtener los registros"}), 400
+        return jsonify({"error": "No se pudo obtener el empleado"}), 400
 
 
 @app.route('/api/v1/empleados', methods=['GET'])
