@@ -50,14 +50,6 @@ def front_registros():
     return render_template('registros/nuevo_registro.html')
 
 
-
-
-
-
-
-
-
-
 # Endpoints Registros
 
 
@@ -156,8 +148,7 @@ def obtener_empleado(id):
 @app.route('/api/v1/empleados', methods=['GET'])
 def obtener_empleados():
     try:
-        datos = request.json
-        maximo_registros = datos.get('maximo')
+        maximo_registros = request.args.get('maximo')
 
         if not maximo_registros:
             maximo_registros = MAXIMO_REGISTROS_POR_DEFECTO
@@ -171,8 +162,8 @@ def obtener_empleados():
                 'nombre': empleado.nombre,
                 'apellido': empleado.apellido,
                 'dni': empleado.dni,
-                'horario_entrada': empleado.horario_entreda,
-                'horario_salida': empleado.horario_salida
+                'horario_entrada': empleado.horario_entrada.strftime('%H:%M:%S'),
+                'horario_salida': empleado.horario_salida.strftime('%H:%M:%S')
             }
 
             lista_empleados.append(datos_empleado)
@@ -185,19 +176,25 @@ def obtener_empleados():
 
 @app.route('/api/v1/empleados', methods=['POST'])
 def agregar_empleado():
+
     nombre = request.json.get("nombre")
     apellido = request.json.get("apellido")
     dni = request.json.get("dni")
     horario_entrada = request.json.get("horario_entrada")
     horario_salida = request.json.get("horario_salida")
+
+    if not (nombre and apellido and dni and horario_entrada and horario_entrada):
+        return jsonify({'message': 'faltan parametros en el body'}), 400
+
     nuevo_empleado = Empleado(nombre=nombre,
                               apellido=apellido,
                               dni=dni,
                               horario_entrada=horario_entrada,
-                              horariosalida=horario_salida)
+                              horario_salida=horario_salida)
     db.session.add(nuevo_empleado)
     db.session.commit()
-    return jsonify({"message": "Agregado Exitosamente"}, 201)
+
+    return jsonify({"message": "Agregado Exitosamente"}), 201
 
 
 @app.route('/api/v1/empleados/<int:id>', methods=['DELETE'])
@@ -234,5 +231,3 @@ if __name__ == '__main__':
         db.drop_all()
         db.create_all()
     app.run(debug=True)
-    
-
