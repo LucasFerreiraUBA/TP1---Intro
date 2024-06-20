@@ -5,11 +5,11 @@ from models import db, Empleado, Registro
 
 app = Flask(__name__, static_url_path='/templates/')
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://usuario:usuario@localhost:5432/tpdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Constantes
-MAXIMO_REGISTROS_POR_DEFECTO = 100
+MAX_REGISTROS = 100
 
 
 # Front
@@ -99,7 +99,11 @@ def agregar_registro():
     es_entrada = request.json.get("es_entrada")
     desfase = request.json.get("desfase")
     nuevo_registro = Registro(
-        horario=horario, empleado_id=empleado_id, es_entrada=es_entrada, desfase=desfase)
+        horario=horario, 
+        empleado_id=empleado_id, 
+        es_entrada=es_entrada, 
+        desfase=desfase
+    )
     db.session.add(nuevo_registro)
     db.session.commit()
     return jsonify({"message": "Agregado Exitosamente"}, 201)
@@ -145,7 +149,7 @@ def obtener_empleado(id):
         empleado = Empleado.query.get(id)
 
         if not empleado:
-            return jsonify({'message': 'no existe el empleado con el id dado'}), 400
+            return jsonify({'message': f'No existe el empleado con id:{id}'}), 400
 
         empleado_data = {
             'id': empleado.id,
@@ -169,7 +173,7 @@ def obtener_empleados():
         maximo_registros = request.args.get('maximo')
 
         if not maximo_registros:
-            maximo_registros = MAXIMO_REGISTROS_POR_DEFECTO
+            maximo_registros = MAX_REGISTROS
 
         empleados = Empleado.query.limit(maximo_registros).all()
         lista_empleados = []
@@ -183,15 +187,15 @@ def obtener_empleados():
                 'horario_entrada': empleado.horario_entrada.strftime('%H:%M:%S'),
                 'horario_salida': empleado.horario_salida.strftime('%H:%M:%S')
             }
-
             lista_empleados.append(datos_empleado)
 
         return jsonify({'empleados': lista_empleados}), 200
 
     except Exception as error:
-        return jsonify({'message': 'Error interno del servidor'}), 500
+        return jsonify({'message': 'Error interno del servidor', 'error': error}), 500
 
-# OK
+
+#OK
 
 
 @app.route('/api/v1/empleados', methods=['POST'])
@@ -206,11 +210,13 @@ def agregar_empleado():
     if not (nombre and apellido and dni and horario_entrada and horario_entrada):
         return jsonify({'message': 'faltan parametros en el body'}), 400
 
-    nuevo_empleado = Empleado(nombre=nombre,
-                              apellido=apellido,
-                              dni=dni,
-                              horario_entrada=horario_entrada,
-                              horario_salida=horario_salida)
+    nuevo_empleado = Empleado(
+        nombre=nombre,
+        apellido=apellido,
+        dni=dni,
+        horario_entrada=horario_entrada,
+        horario_salida=horario_salida
+        )
     db.session.add(nuevo_empleado)
     db.session.commit()
 
@@ -238,7 +244,7 @@ def actualizar_empleado(id):
         empleado = db.session.query(Empleado).get(id)
 
         if not empleado:
-            return jsonify({'message': 'no existe el empleado'}), 404
+            return jsonify({'message': 'No existe el empleado'}), 404
 
         nombre = request.json.get("nombre")
         apellido = request.json.get("apellido")
@@ -277,4 +283,4 @@ if __name__ == '__main__':
     with app.app_context():
         #db.drop_all()
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, port=port)
