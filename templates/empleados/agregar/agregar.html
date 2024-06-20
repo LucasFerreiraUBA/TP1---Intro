@@ -15,13 +15,13 @@
         <input type="text" id="lastname" name="lastname" placeholder="Messi" required>
 
         <label for="dni">DNI</label>
-        <input type="number" id="dni" name="dni" placeholder="XXXXXXXX" required>
+        <input type="text" id="dni" name="dni" placeholder="12345678" maxlength="8" minlength="8" required>
     
         <label for="entry">Horario de entrada</label>
-        <input type="text" id="entry" name="entry" placeholder="10:00" required>
+        <input type="time" id="entry" name="entry" placeholder="10:00" required>
 
         <label for="output">Horario de salida</label>
-        <input type="text" id="output" name="output" placeholder="16:00" required>
+        <input type="time" id="output" name="output" placeholder="16:00" required>
        
         <button>Submit</button>
     </form>
@@ -29,7 +29,7 @@
         function handle_response(data) {
             if (data.sucess) {
                 alert("Se pudo crear el empleado")
-                window.location.href = `/empleados` //no sabria redireccionarlo al id del empleado: ${}
+                window.location.href = `/empleados/${data.id}`
             }else {
                 alert("Error al crear al empleado")
             }
