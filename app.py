@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
-
+from datetime import datetime
 from models import db, Empleado, Registro
 
 app = Flask(__name__, static_url_path='/templates/')
@@ -52,19 +52,24 @@ def front_registros():
 
 # Endpoints Registros ########################################
 
-# OK
+# OK, falta probar
 @app.route('/api/v1/registros', methods=['GET'])
 def obtener_registros():
     try:
         registros = Registro.query.all()
         registros_data = []
         for registro in registros:
+            empleado = db.session.query(Empleado).get(registro.empleado_id)
+
             registro_data = {
                 'id': registro.id,
-                'horario': registro.horario,
-                'empleado_id': registro.empleado_id,
+                'horario': registro.horario.isoformat(),
+                'empleado': {
+                    'nombre': empleado.nombre,
+                    'apellido': empleado.apellido
+                },
                 'es_entrada': registro.es_entrada,
-                'desfase': registro.desfase,
+                'desfase': registro.desfase.strftime("%H:%M:%S"),
             }
             registros_data.append(registro_data)
         return jsonify(registros_data)
@@ -94,16 +99,47 @@ def obtener_registro(id):
 
 @app.route('/api/v1/registros', methods=['POST'])
 def agregar_registro():
-    horario = request.json.get("horario")
-    empleado_id = request.json.get("empleado_id")
-    es_entrada = request.json.get("es_entrada")
-    desfase = request.json.get("desfase")
-    nuevo_registro = Registro(
-        horario=horario, empleado_id=empleado_id, es_entrada=es_entrada, desfase=desfase)
-    db.session.add(nuevo_registro)
-    db.session.commit()
-    return jsonify({"message": "Agregado Exitosamente"}, 201)
+    try:
+        horario = request.json.get("horario")
+        empleado_id = request.json.get("empleado_id")
 
+        empleado = db.session.query(Empleado).get(empleado_id)
+
+        if empleado is None:
+            return jsonify({'message': "Employee not found"}), 404
+
+        fecha = datetime.fromisoformat(horario)
+
+        hora_fichaje = fecha.time()
+#pendiente de correccion de error
+        hora_entrada = datetime(empleado.horario_entrada).time()
+        hora_salida = datetime(empleado.horario_salida).time()
+
+        diferencia_entrada = hora_fichaje - hora_entrada
+        diferencia_salida = hora_fichaje - hora_salida
+
+        es_entrada = False
+        if diferencia_entrada < diferencia_salida:
+            es_entrada = True
+
+        valor_absoluto_diferencia = diferencia_salida
+        if es_entrada:
+            valor_absoluto_diferencia = diferencia_entrada
+
+        desfase = datetime.fromtimestamp(
+            valor_absoluto_diferencia)
+        desfase = desfase.strftime("%H:%M:%S")
+
+        nuevo_registro = Registro(
+            horario=horario, empleado_id=empleado_id, es_entrada=es_entrada, desfase=desfase)
+
+        db.session.add(nuevo_registro)
+        db.session.commit()
+
+        return jsonify({"message": "Agregado Exitosamente"}), 201
+    except Exception as error:
+        print(error)
+        return jsonify({'message': "Hubo un error"}), 400
 # Falta probar
 
 
@@ -245,26 +281,24 @@ def actualizar_empleado(id):
         dni = request.json.get('dni')
         horario_entrada = request.json.get('horario_entrada')
         horario_salida = request.json.get('horario_salida')
-        
-        
-        
+
         if nombre:
             empleado.nombre = nombre
-            
+
         if apellido:
             empleado.apellido = apellido
-        
+
         if dni:
             empleado.dni = dni
-        
+
         if horario_entrada:
             empleado.horario_entrada = horario_entrada
-            
+
         if horario_salida:
             empleado.horario_salida = horario_salida
-        
+
         db.session.commit()
-        
+
         return jsonify({"message": "Actualizado Exitosamente"}), 201
     except:
         return jsonify({"message": "Ha ocurrido un error"}), 400
@@ -275,6 +309,6 @@ db.init_app(app)
 
 if __name__ == '__main__':
     with app.app_context():
-        #db.drop_all()
+        # db.drop_all()
         db.create_all()
     app.run(debug=True)
