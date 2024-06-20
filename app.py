@@ -18,6 +18,10 @@ def indice():
     return render_template('index.html')
 
 
+@app.route('/empleados/agregar', methods=['GET'])
+def indice():
+    return render_template('empleados/agregar/agregar.html')
+
 @app.route('/empleados', methods=['GET'])
 def empleados():
     empleados = [
