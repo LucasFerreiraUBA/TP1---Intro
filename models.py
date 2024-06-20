@@ -8,7 +8,7 @@ class Empleado(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(255), nullable=False)
     apellido = db.Column(db.String(255), nullable=False)
-    dni = db.Column(db.Integer, nullable=False)
+    dni = db.Column(db.Integer, unique=True, nullable=False)
     horario_entrada = db.Column(db.Time, nullable=False)
     horario_salida = db.Column(db.Time, nullable=False)
     registros = db.relationship("Registro")
