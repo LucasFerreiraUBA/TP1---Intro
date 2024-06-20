@@ -7,7 +7,7 @@ from models import db, Empleado, Registro
 app = Flask(__name__, static_url_path='/templates/')
 CORS(app)
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://jarro:45077367@localhost:5432/tpdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Constantes
@@ -39,10 +39,7 @@ def empleados():
 
 @app.route('/empleados/<int:id>', methods=['GET'])
 def empleado(id):
-    empleado = {
-        'nombre': 'juan',
-        'id': id
-    }
+    empleado = Empleado.query.get(id)
     return render_template('empleados/empleado.html', empleado=empleado)
 
 
@@ -215,6 +212,12 @@ def agregar_empleado():
 
     if not (nombre and apellido and dni and horario_entrada and horario_entrada):
         return jsonify({'message': 'faltan parametros en el body'}), 400
+    
+    #por si el emplado ya existe
+    empleado = db.session.query(Empleado.id).filter(Empleado.dni==dni).first()
+    
+    if empleado != None:
+        return jsonify({'message': 'empleado ya existente'}), 400
 
     nuevo_empleado = Empleado(
         nombre=nombre,
@@ -226,10 +229,11 @@ def agregar_empleado():
     db.session.add(nuevo_empleado)
     db.session.commit()
 
-    ##para que devuelva su id de base de dato
-    id_empleado = Empleado.query.when(dni=dni)
+    ##para que devuelva su id de tabla
+   
+    empleado = db.session.query(Empleado.id).filter(Empleado.dni==dni).first()
 
-    return jsonify({"sucess": f"Agregado DNI:{dni} "}), 200 #debe ir sucess para que no aparesca un aviso
+    return jsonify({"sucess": f"Agregado DNI:{dni} ", "id":empleado.id}), 200 #debe ir sucess para que no aparesca un aviso
 
 # OK
 

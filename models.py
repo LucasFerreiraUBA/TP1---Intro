@@ -8,7 +8,7 @@ class Empleado(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(255), nullable=False)
     apellido = db.Column(db.String(255), nullable=False)
-    dni = db.Column(db.Integer, unique=True, nullable=False)
+    dni = db.Column(db.String(255), unique=True, nullable=False)
     horario_entrada = db.Column(db.Time, nullable=False)
     horario_salida = db.Column(db.Time, nullable=False)
     registros = db.relationship("Registro")
@@ -26,7 +26,7 @@ class Registro(db.Model):
     __tablename__ = 'registros'
     id = db.Column(db.Integer, primary_key=True)
     horario = db.Column(db.DateTime, nullable=False)
-    empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
+    empleado_id = db.Column(db.String(255), db.ForeignKey('empleados.id'))
     es_entrada = db.Column(db.Boolean, nullable = False, default = True)
     desfase = db.Column(db.Time, nullable= False)
     
