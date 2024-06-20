@@ -3,13 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 from models import db, Empleado, Registro
 
-app = Flask(__name__, static_url_path='/templates')
+app = Flask(__name__, static_url_path='/templates/')
 port = 5000
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://usuario:usuario@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Constantes
-MAXIMO_REGISTROS_POR_DEFECTO = 10
+MAXIMO_REGISTROS_POR_DEFECTO = 100
 
 
 # Front
@@ -50,9 +50,9 @@ def front_registros():
     return render_template('registros/nuevo_registro.html')
 
 
-# Endpoints Registros
+# Endpoints Registros ########################################
 
-
+# OK
 @app.route('/api/v1/registros', methods=['GET'])
 def obtener_registros():
     try:
@@ -71,6 +71,8 @@ def obtener_registros():
     except:
         return jsonify({"error": "No se pudo obtener los registros"}), 400
 
+# OK
+
 
 @app.route('/api/v1/registros/<int:id>', methods=['GET'])
 def obtener_registro(id):
@@ -87,6 +89,8 @@ def obtener_registro(id):
     except:
         return jsonify({"error": "Registro Inexistente"}), 400
 
+# OK
+
 
 @app.route('/api/v1/registros', methods=['POST'])
 def agregar_registro():
@@ -100,6 +104,8 @@ def agregar_registro():
     db.session.commit()
     return jsonify({"message": "Agregado Exitosamente"}, 201)
 
+# Falta probar
+
 
 @app.route('/api/v1/registros/<int:id>', methods=['DELETE'])
 def eliminar_registro(id):
@@ -111,11 +117,14 @@ def eliminar_registro(id):
     except:
         return jsonify({"message": "Registro desconocido"}, 400)
 
+# Falta probar
+
 
 @app.route('/api/v1/registros/<int:id>', methods=['PUT'])
 def modificar_registro(id):
     try:
         registro = Registro.query.get(id)
+
         registro.horario = request.json.get("horario")
         registro.empleado_id = request.json.get("empleado_id")
         registro.es_entrada = request.json.get("es_entrada")
@@ -125,7 +134,9 @@ def modificar_registro(id):
     except:
         return jsonify({"message": "Registro desconocido"}, 400)
 
-# Endpoints Empleados
+# Endpoints Empleados ################################################
+
+# OK
 
 
 @app.route('/api/v1/empleados/<int:id>', methods=['GET'])
@@ -144,10 +155,12 @@ def obtener_empleado(id):
             'horario_entrada': empleado.horario_entrada.strftime('%H:%M:%S'),
             'horario_salida': empleado.horario_salida.strftime('%H:%M:%S'),
         }
-        
+
         return jsonify(empleado_data)
     except:
         return jsonify({"error": "No se pudo obtener el empleado"}), 400
+
+# OK
 
 
 @app.route('/api/v1/empleados', methods=['GET'])
@@ -178,6 +191,8 @@ def obtener_empleados():
     except Exception as error:
         return jsonify({'message': 'Error interno del servidor'}), 500
 
+# OK
+
 
 @app.route('/api/v1/empleados', methods=['POST'])
 def agregar_empleado():
@@ -201,6 +216,8 @@ def agregar_empleado():
 
     return jsonify({"message": "Agregado Exitosamente"}), 201
 
+# OK
+
 
 @app.route('/api/v1/empleados/<int:id>', methods=['DELETE'])
 def eliminar_empleado(id):
@@ -208,24 +225,49 @@ def eliminar_empleado(id):
         empleado = Empleado.query.get(id)
         db.session.delete(empleado)
         db.session.commit()
-        return jsonify({"message": "Borrado Exitosamente"}, 201)
+        return jsonify({"message": "Borrado Exitosamente"}), 201
     except:
-        return jsonify({"message": "Empleado desconocido"}, 400)
+        return jsonify({"message": "Empleado desconocido"}), 404
+
+# Falta probar
 
 
 @app.route('/api/v1/empleados/<int:id>', methods=['PUT'])
 def actualizar_empleado(id):
     try:
-        empleado = Empleado.query.get(id)
-        empleado.nombre = request.json.get("nombre")
-        empleado.apellido = request.json.get("apellido")
-        empleado.dni = request.json.get("dni")
-        empleado.horario_entrada = request.json.get("horario_entrada")
-        empleado.horario_salida = request.json.get("horario_salida")
+        empleado = db.session.query(Empleado).get(id)
+
+        if not empleado:
+            return jsonify({'message': 'no existe el empleado'}), 404
+
+        nombre = request.json.get("nombre")
+        apellido = request.json.get("apellido")
+        dni = request.json.get('dni')
+        horario_entrada = request.json.get('horario_entrada')
+        horario_salida = request.json.get('horario_salida')
+        
+        
+        
+        if nombre:
+            empleado.nombre = nombre
+            
+        if apellido:
+            empleado.apellido = apellido
+        
+        if dni:
+            empleado.dni = dni
+        
+        if horario_entrada:
+            empleado.horario_entrada = horario_entrada
+            
+        if horario_salida:
+            empleado.horario_salida = horario_salida
+        
         db.session.commit()
-        return jsonify({"message": "Actualizado Exitosamente"}, 201)
+        
+        return jsonify({"message": "Actualizado Exitosamente"}), 201
     except:
-        return jsonify({"message": "Empleado desconocido"}, 400)
+        return jsonify({"message": "Ha ocurrido un error"}), 400
 
 
 db.init_app(app)
@@ -233,6 +275,6 @@ db.init_app(app)
 
 if __name__ == '__main__':
     with app.app_context():
-        db.drop_all()
+        #db.drop_all()
         db.create_all()
     app.run(debug=True)
