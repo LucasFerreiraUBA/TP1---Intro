@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from models import db, Empleado, Registro
 
-app = Flask(__name__, static_url_path='/templates')
+app = Flask(__name__, static_url_path='/templates/')
 port = 5000
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://usuario:usuario@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

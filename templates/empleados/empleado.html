@@ -1,2 +1,44 @@
-<h1>Empleado {{empleado.nombre}}</h1>
-<h2>{{empleado.id}}</h2>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Empleados</title>
+  </head>
+  <body>
+    <h1>Empleado []</h1>
+    <p>Lista todos los empleados...</p>
+    <ul id="employees_list"></ul>
+
+    <script type="module">
+      async function response_received(response) {
+        const data = await response.json();
+        return data;
+      }
+
+      function parse_data(content) {
+        console.log(content.empleados);
+        const container = document.getElementById("employees_list");
+
+        for (let i = 0; i < content.empleados.length; i++) {
+          const item = document.createElement("p");
+          item.innerText = content.empleados[i].nombre;
+          container.append(item);
+        }
+      }
+
+      function request_error(err) {
+        console.log(err);
+      }
+
+      function get_employee() {
+        fetch("http://localhost:5000/api/v1/empleados/")
+          .then(response_received)
+          .then(parse_data)
+          .catch(request_error);
+      }
+
+      get_employee();
+    </script>
+  </body>
+</html>
