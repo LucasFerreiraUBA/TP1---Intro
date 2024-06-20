@@ -7,7 +7,7 @@
 </head>
 <body>
     <h2 >Empleado</h2>
-    <form onsubmit="crear_employee(event)">
+    <form onsubmit="create_employee(event)">
         <label for="name">Nombre</label>
         <input type="text" id="name" name="name" placeholder="Lionel" required>
 
@@ -29,7 +29,7 @@
         function handle_response(data) {
             if (data.sucess) {
                 alert("Se pudo crear el empleado")
-                window.location.href = `/empleados/${data.id}`
+                window.location.href = `/empleados` //no sabria redireccionarlo al id del empleado: ${}
             }else {
                 alert("Error al crear al empleado")
             }

@@ -1,11 +1,13 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS #instalar flask-cors de python
 
 from models import db, Empleado, Registro
 
 app = Flask(__name__, static_url_path='/templates/')
+CORS(app)
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/tpdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://jarro:45077367@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Constantes
@@ -19,7 +21,7 @@ def indice():
 
 
 @app.route('/empleados/agregar', methods=['GET'])
-def indice():
+def front_agregar_empleado():
     return render_template('empleados/agregar/agregar.html')
 
 @app.route('/empleados', methods=['GET'])
@@ -224,7 +226,10 @@ def agregar_empleado():
     db.session.add(nuevo_empleado)
     db.session.commit()
 
-    return jsonify({"message": "Agregado Exitosamente"}), 201
+    ##para que devuelva su id de base de dato
+    id_empleado = Empleado.query.when(dni=dni)
+
+    return jsonify({"sucess": f"Agregado DNI:{dni} "}), 200 #debe ir sucess para que no aparesca un aviso
 
 # OK
 
@@ -281,9 +286,11 @@ def actualizar_empleado(id):
 
 
 db.init_app(app)
-
+with app.app_context():
+        db.create_all()
 
 if __name__ == '__main__':
+    
     with app.app_context():
         #db.drop_all()
         db.create_all()
