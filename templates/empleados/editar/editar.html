@@ -6,7 +6,7 @@
     <title>Editar Empleado</title>
 </head>
 <body>
-    <h2 >Empleado - [nombre] </h2>
+    <h2 id="empleado-nombre"></h2>
     <form onsubmit="edit_employee(event)">
         <label for="name">Nombre</label>
         <input type="text" id="name" name="name" placeholder="Lionel" required>
@@ -32,6 +32,20 @@
         if (id == null) {
             window.location.href = "/"
         }
+
+        function handle_data(data) {
+            document.getElementById("empleado-nombre").innerText = "Empleado " + data.nombre + ", " + data.apellido
+            document.getElementById("name").value = data.nombre
+            document.getElementById("lastname").value = data.apellido
+            document.getElementById("dni").value = data.dni
+            document.getElementById("entry").value = data.horario_entrada
+            document.getElementById("output").value = data.horario_salida
+        }
+
+        fetch(`http://localhost:5000/api/v1/empleados/${id}`, {method:"GET"})
+            .then((res) => res.json())
+            .then(handle_data)
+            .catch((error) => console.log("ERROR", error))
 
         function handle_response(data) {
             if (data.sucess) {
