@@ -7,7 +7,7 @@ from models import db, Empleado, Registro
 app = Flask(__name__, static_url_path='/templates/')
 CORS(app)
 port = 5000
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/tpdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:user@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Constantes
@@ -21,8 +21,12 @@ def indice():
 
 
 @app.route('/empleados/agregar', methods=['GET'])
-def front_agregar_empleado():
+def front_create_employee():
     return render_template('empleados/agregar/agregar.html')
+
+@app.route('/empleados/editar', methods=['GET'])
+def front_edit_employee():
+    return render_template('empleados/editar/editar.html')
 
 @app.route('/empleados', methods=['GET'])
 def empleados():
@@ -264,9 +268,7 @@ def actualizar_empleado(id):
         dni = request.json.get('dni')
         horario_entrada = request.json.get('horario_entrada')
         horario_salida = request.json.get('horario_salida')
-        
-        
-        
+
         if nombre:
             empleado.nombre = nombre
             
@@ -284,13 +286,15 @@ def actualizar_empleado(id):
         
         db.session.commit()
         
-        return jsonify({"message": "Actualizado Exitosamente"}), 201
+        return jsonify({"sucess": "Actualizado Exitosamente", "id":id}), 201
     except:
         return jsonify({"message": "Ha ocurrido un error"}), 400
 
 
 db.init_app(app)
+
 with app.app_context():
+        db.drop_all()
         db.create_all()
 
 if __name__ == '__main__':
