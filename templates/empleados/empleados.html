@@ -9,7 +9,7 @@
     <h1>Empleados</h1>
     <p>Lista todos los empleados...</p>
     <ul id="employees_list"></ul>
-    
+
     <script type="module">
       async function response_received(response) {
         const data = await response.json();
@@ -17,13 +17,12 @@
       }
 
       function parse_data(content) {
-        console.log(content.empleados);
         const container = document.getElementById("employees_list");
 
-        for (let i = 0; i < content.empleados.length; i++) {
-          const item = document.createElement("p");
-          item.innerText = content.empleados[i].nombre;
-          container.append(item);
+        for (const item of content) {
+          const elem = document.createElement("p");
+          elem.innerText = item.nombre;
+          container.append(elem);
         }
       }
 

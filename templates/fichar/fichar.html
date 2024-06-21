@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fichar</title>
+</head>
+<body>
+    <h2> Agregar Registro Nuevo</h2>
+    <form onsubmit="create_record(event)">
+        <label for="empleados">Lista de Empleados:</label>
+        <select id="empleados" name="empleados" required>
+        </select>
+
+        <label for="horario">Tipo de horario:</label>
+        <input type="radio" name="horario" value="entrada" id="horario-entrada" required>
+        <label for="horario-entrada">Entrada</label>
+
+        <input  type="radio" name="horario" value="salida" id="horario-salida" required>
+        <label for="horario-salida">Salida</label>
+
+        <label for="hora">Horario de llegada/salida</label>
+        <input type="time" id="hora" name="hora" placeholder="10:00" required>
+       
+        <button>Submit</button>
+    </form>
+    <script>
+        function handle_get_response(data) {
+            const lista = document.getElementById("empleados")
+            for (const item of data) {
+                console.log(item)
+                const opcion = document.createElement("option")
+                opcion.innerText = item.nombre + ", " + item.apellido
+                opcion.setAttribute("value", `${item.id}`)
+                lista.append(opcion);
+            }
+        }
+
+        fetch(`http://localhost:5000/api/v1/empleados`, {method:"GET"})
+            .then((res) => res.json())
+            .then(handle_get_response)
+            .catch((error) => console.log("ERROR", error))
+
+        function handle_response(data) {
+            if (data.sucess) {
+                alert("Registro agregado")
+            }else {
+                alert("Error al crear registro")
+            }
+        }
+
+        function create_record(event) {
+            event.preventDefault()
+            const formData = new FormData(event.target)
+            const id_empleado = formData.get("empleados")
+            const es_entrada = formData.get("horario")
+            const hora = formData.get("hora")
+            // const desfase = ? 
+
+            fetch(`http://localhost:5000/api/v1/registros`, {method:"POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    horario: hora,
+                    empleado_id: id_empleado,
+                    es_entrada: es_entrada,
+                    desfase: desfase,
+                })
+            })
+            .then((res) => res.json())
+            .then(handle_response)
+            .catch((error) => console.log("ERROR", error))
+        }
+    </script>
+
+</body>
+</html>

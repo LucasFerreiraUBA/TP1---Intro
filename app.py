@@ -19,6 +19,9 @@ MAX_REGISTROS = 100
 def indice():
     return render_template('index.html')
 
+@app.route('/fichar', methods=['GET'])
+def front_fichar_empleado():
+    return render_template('fichar/fichar.html')
 
 @app.route('/empleados/agregar', methods=['GET'])
 def front_create_employee():
@@ -113,7 +116,7 @@ def agregar_registro():
     )
     db.session.add(nuevo_registro)
     db.session.commit()
-    return jsonify({"message": "Agregado Exitosamente"}, 201)
+    return jsonify({"sucess": "Agregado Exitosamente"}, 201)
 
 # Falta probar
 
@@ -124,7 +127,7 @@ def eliminar_registro(id):
         registro = Registro.query.get(id)
         db.session.delete(registro)
         db.session.commit()
-        return jsonify({"message": "Borrado Exitosamente"}, 201)
+        return jsonify({"sucess": "Borrado Exitosamente"}, 201)
     except:
         return jsonify({"message": "Registro desconocido"}, 400)
 
@@ -167,7 +170,7 @@ def obtener_empleado(id):
             'horario_salida': empleado.horario_salida.strftime('%H:%M:%S'),
         }
 
-        return jsonify(empleado_data)
+        return jsonify(empleado_data), 200
     except:
         return jsonify({"error": "No se pudo obtener el empleado"}), 400
 
@@ -196,10 +199,10 @@ def obtener_empleados():
             }
             lista_empleados.append(datos_empleado)
 
-        return jsonify({'empleados': lista_empleados}), 200
+        return jsonify(lista_empleados), 200
 
-    except Exception as error:
-        return jsonify({'message': 'Error interno del servidor', 'error': error}), 500
+    except:
+        return jsonify({'message': 'Error interno del servidor'}), 500
 
 
 #OK
@@ -292,10 +295,6 @@ def actualizar_empleado(id):
 
 
 db.init_app(app)
-
-with app.app_context():
-        db.drop_all()
-        db.create_all()
 
 if __name__ == '__main__':
     
