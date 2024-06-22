@@ -9,11 +9,17 @@ body,
 h1,
 h2,
 h3,
-h4
+h4,
+footer,
+main,
+p,
 .menu{
     margin: 0;
 }
 /* Rellenos */
+body,
+main,
+footer
 .menu{
     padding: 0;
 }

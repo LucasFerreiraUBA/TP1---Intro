@@ -1,9 +1,10 @@
 .boton{
     background-color: #04aa6d;
-    width: 100%;
-    border-radius: 2px;
-    width: 300px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
 }
-.boton h1,h2,p{
+.boton h1,h2{
     color:#fff
 }
