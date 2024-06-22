@@ -1,5 +1,0 @@
-/*Este archivo lo usamos para todos los templates que tengan cosas en común, así no repetimos código y luego cada template importa su estilo en particular*/
-
-/* Reglas generales */
-@import url(general.css);
-@import url(botones.css);
