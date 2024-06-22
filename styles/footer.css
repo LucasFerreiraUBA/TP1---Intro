@@ -1,0 +1,6 @@
+footer{
+    min-height: 10vh;
+    display: grid;
+    place-content: center;
+    background-color: #d5d9dc;
+}
