@@ -6,39 +6,10 @@
     <title>Empleados</title>
   </head>
   <body>
-    <h1>Empleado []</h1>
-    <p>Lista todos los empleados...</p>
+    <h1>Empleado [{{empleado.nombre}}, {{empleado.apellido}}]</h1>
+    <p>Lista todos los empleados...A</p>
+    <h1>{{empleado.dni}}</h1>
     <ul id="employees_list"></ul>
-
-    <script type="module">
-      async function response_received(response) {
-        const data = await response.json();
-        return data;
-      }
-
-      function parse_data(content) {
-        console.log(content.empleados);
-        const container = document.getElementById("employees_list");
-
-        for (let i = 0; i < content.empleados.length; i++) {
-          const item = document.createElement("p");
-          item.innerText = content.empleados[i].nombre;
-          container.append(item);
-        }
-      }
-
-      function request_error(err) {
-        console.log(err);
-      }
-
-      function get_employee() {
-        fetch("http://localhost:5000/api/v1/empleados/")
-          .then(response_received)
-          .then(parse_data)
-          .catch(request_error);
-      }
-
-      get_employee();
     </script>
   </body>
 </html>

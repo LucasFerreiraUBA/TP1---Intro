@@ -17,13 +17,12 @@
       }
 
       function parse_data(content) {
-        console.log(content.empleados);
         const container = document.getElementById("employees_list");
 
-        for (let i = 0; i < content.empleados.length; i++) {
-          const item = document.createElement("p");
-          item.innerText = content.empleados[i].nombre;
-          container.append(item);
+        for (const item of content) {
+          const elem = document.createElement("p");
+          elem.innerText = item.nombre;
+          container.append(elem);
         }
       }
 
