@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS #instalar flask-cors de python
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from models import db, Empleado, Registro
 
 app = Flask(__name__, static_url_path='/templates/')
@@ -147,13 +147,23 @@ def agregar_registro():
         if(es_entrada):
             diferencia = diferencia_entrada
 
-        nuevo_registro = Registro(
-            horario=horario, empleado_id=empleado_id, es_entrada=es_entrada, desfase=diferencia)
+        registro = db.session.query(Registro).filter(Registro.horario >= hora_fichaje.date(), Registro.horario < hora_fichaje.date() + timedelta(days=1), Registro.es_entrada == es_entrada,Registro.empleado_id == empleado_id).first()
 
-        db.session.add(nuevo_registro)
+        if registro == None:
+            nuevo_registro = Registro(
+            horario=hora_fichaje, empleado_id=empleado_id, es_entrada=es_entrada, desfase=diferencia)
+            db.session.add(nuevo_registro)
+        else:
+            registro.horario = hora_fichaje,
+            registro.desfase = diferencia
+
         db.session.commit()
 
-        return jsonify({"message": "Agregado Exitosamente"}), 201
+        if registro == None:
+            return jsonify({"message": "Agregado Exitosamente"}), 201
+        else:
+            return jsonify({"message": "Se actualizo la hora de entrada"}), 201
+    
     except Exception as error:
         print(error)
         return jsonify({'message': "Hubo un error"}), 400
@@ -335,6 +345,6 @@ db.init_app(app)
 if __name__ == '__main__': 
     
     with app.app_context():
-        #db.drop_all()
+        db.drop_all()
         db.create_all()
     app.run(debug=True, port=port)
