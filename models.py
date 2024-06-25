@@ -28,7 +28,7 @@ class Registro(db.Model):
     horario = db.Column(db.DateTime, nullable=False)
     empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
     es_entrada = db.Column(db.Boolean, nullable = False, default = True)
-    desfase = db.Column(db.Time, nullable= False)
+    desfase = db.Column(db.Interval, nullable= False)
     
     def __init__(self, horario, empleado_id, es_entrada, desfase):
         self.horario = horario

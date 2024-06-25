@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS #instalar flask-cors de python
-from datetime import datetime
+from flask_cors import CORS
+from datetime import datetime, time, timedelta
 from models import db, Empleado, Registro
 
 app = Flask(__name__, static_url_path='/templates/')
@@ -76,10 +76,17 @@ def obtener_registros():
                 'horario': registro.horario.isoformat(),
                 'empleado': {
                     'nombre': empleado.nombre,
-                    'apellido': empleado.apellido
+                    'apellido': empleado.apellido,
+                    'horario_entrada': empleado.horario_entrada.strftime('%H:%M:%S'),
+                    'horario_salida': empleado.horario_salida.strftime('%H:%M:%S')
                 },
                 'es_entrada': registro.es_entrada,
-                'desfase': registro.desfase.strftime("%H:%M:%S"),
+                'desfase': registro.desfase.seconds // 60,
+                'diferencia' : {
+                    'horas' : registro.desfase.seconds // 3600,
+                    'minutos': (registro.desfase.seconds % 3600) // 60,
+                    'segundos' : (registro.desfase.seconds % 60)
+                }
             }
             registros_data.append(registro_data)
         return jsonify(registros_data)
@@ -105,48 +112,56 @@ def obtener_registro(id):
         return jsonify({"error": "Registro Inexistente"}), 400
 
 # OK
-
-
 @app.route('/api/v1/registros', methods=['POST'])
 def agregar_registro():
     try:
         horario = request.json.get("horario")
-        empleado_id = request.json.get("empleado_id")
+        empleado_id = int(request.json.get("empleado_id"))
 
         empleado = db.session.query(Empleado).get(empleado_id)
 
         if empleado is None:
             return jsonify({'message': "Employee not found"}), 404
 
-        fecha = datetime.fromisoformat(horario)
+        hora_fichaje = datetime.fromisoformat(horario)
 
-        hora_fichaje = fecha.time()
-#pendiente de correccion de error
-        hora_entrada = datetime(empleado.horario_entrada).time()
-        hora_salida = datetime(empleado.horario_salida).time()
+        hora_entrada = datetime.combine(hora_fichaje.date(), empleado.horario_entrada)
+        hora_salida = datetime.combine(hora_fichaje.date(), empleado.horario_salida)
 
-        diferencia_entrada = hora_fichaje - hora_entrada
-        diferencia_salida = hora_fichaje - hora_salida
+        print('hora entrada', hora_entrada)
+        print('hora_salida', hora_salida)
+            
+        diferencia_entrada = abs(hora_fichaje - hora_entrada)
+        diferencia_salida = abs(hora_fichaje - hora_salida)
 
-        es_entrada = False
-        if diferencia_entrada < diferencia_salida:
-            es_entrada = True
+        print('fichaje', hora_fichaje)
 
-        valor_absoluto_diferencia = diferencia_salida
-        if es_entrada:
-            valor_absoluto_diferencia = diferencia_entrada
+        print('dif entrada', diferencia_entrada)
+        print('dif salida', diferencia_salida)
 
-        desfase = datetime.fromtimestamp(
-            valor_absoluto_diferencia)
-        desfase = desfase.strftime("%H:%M:%S")
+        es_entrada = diferencia_entrada < diferencia_salida
 
-        nuevo_registro = Registro(
-            horario=horario, empleado_id=empleado_id, es_entrada=es_entrada, desfase=desfase)
+        diferencia = diferencia_salida
+        if(es_entrada):
+            diferencia = diferencia_entrada
 
-        db.session.add(nuevo_registro)
+        registro = db.session.query(Registro).filter(Registro.horario >= hora_fichaje.date(), Registro.horario < hora_fichaje.date() + timedelta(days=1), Registro.es_entrada == es_entrada,Registro.empleado_id == empleado_id).first()
+
+        if registro == None:
+            nuevo_registro = Registro(
+            horario=hora_fichaje, empleado_id=empleado_id, es_entrada=es_entrada, desfase=diferencia)
+            db.session.add(nuevo_registro)
+        else:
+            registro.horario = hora_fichaje,
+            registro.desfase = diferencia
+
         db.session.commit()
 
-        return jsonify({"message": "Agregado Exitosamente"}), 201
+        if registro == None:
+            return jsonify({"message": "Agregado Exitosamente"}), 201
+        else:
+            return jsonify({"message": "Se actualizo la hora de entrada"}), 201
+    
     except Exception as error:
         print(error)
         return jsonify({'message': "Hubo un error"}), 400
@@ -328,6 +343,6 @@ db.init_app(app)
 if __name__ == '__main__': 
     
     with app.app_context():
-        # db.drop_all()
+        db.drop_all()
         db.create_all()
     app.run(debug=True, port=port)
