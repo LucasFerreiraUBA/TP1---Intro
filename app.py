@@ -62,7 +62,7 @@ def front_registros():
 
 # Endpoints Registros ########################################
 
-# OK, falta probar
+# OK
 @app.route('/api/v1/registros', methods=['GET'])
 def obtener_registros():
     try:
@@ -94,8 +94,6 @@ def obtener_registros():
         return jsonify({"error": "No se pudo obtener los registros"}), 400
 
 # OK
-
-
 @app.route('/api/v1/registros/<int:id>', methods=['GET'])
 def obtener_registro(id):
     try:
@@ -165,9 +163,8 @@ def agregar_registro():
     except Exception as error:
         print(error)
         return jsonify({'message': "Hubo un error"}), 400
+
 # Falta probar
-
-
 @app.route('/api/v1/registros/<int:id>', methods=['DELETE'])
 def eliminar_registro(id):
     try:
@@ -179,8 +176,6 @@ def eliminar_registro(id):
         return jsonify({"message": "Registro desconocido"}, 400)
 
 # Falta probar
-
-
 @app.route('/api/v1/registros/<int:id>', methods=['PUT'])
 def modificar_registro(id):
     try:
@@ -198,8 +193,6 @@ def modificar_registro(id):
 # Endpoints Empleados ################################################
 
 # OK
-
-
 @app.route('/api/v1/empleados/<int:id>', methods=['GET'])
 def obtener_empleado(id):
     try:
@@ -303,8 +296,6 @@ def eliminar_empleado(id):
         return jsonify({"message": "Empleado desconocido"}), 404
 
 # Falta probar
-
-
 @app.route('/api/v1/empleados/<int:id>', methods=['PUT'])
 def actualizar_empleado(id):
     try:
@@ -343,6 +334,6 @@ db.init_app(app)
 if __name__ == '__main__': 
     
     with app.app_context():
-        db.drop_all()
+        #db.drop_all()
         db.create_all()
     app.run(debug=True, port=port)
