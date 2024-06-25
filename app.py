@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS #instalar flask-cors de python
+from flask_cors import CORS
 from datetime import datetime, time, timedelta
 from models import db, Empleado, Registro
 
@@ -112,8 +112,6 @@ def obtener_registro(id):
         return jsonify({"error": "Registro Inexistente"}), 400
 
 # OK
-
-
 @app.route('/api/v1/registros', methods=['POST'])
 def agregar_registro():
     try:
