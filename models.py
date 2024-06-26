@@ -28,10 +28,10 @@ class Registro(db.Model):
     horario = db.Column(db.DateTime, nullable=False)
     empleado_id = db.Column(db.Integer, db.ForeignKey('empleados.id'))
     es_entrada = db.Column(db.Boolean, nullable = False, default = True)
-    desfase = db.Column(db.Interval, nullable= False)
+    desfase_segundos = db.Column(db.Integer, nullable= False)
     
-    def __init__(self, horario, empleado_id, es_entrada, desfase):
+    def __init__(self, horario, empleado_id, es_entrada, desfase_segundos):
         self.horario = horario
-        self.desfase = desfase
+        self.desfase_segundos = desfase_segundos
         self.empleado_id = empleado_id
         self.es_entrada = es_entrada
