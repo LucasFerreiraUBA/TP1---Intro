@@ -19,6 +19,16 @@ class Employee(db.Model):
         self.dni = dni
         self.check_in_time = check_in_time
         self.check_out_time = check_out_time
+
+    def toDict(self):
+        return {
+                'id': self.id,
+                'first_name': self.first_name,
+                'last_name': self.last_name,
+                'dni': self.dni,
+                'check_in_time': self.check_in_time.strftime('%H:%M:%S'),
+                'check_out_time': self.check_out_time.strftime('%H:%M:%S'),
+            }
     
     
     

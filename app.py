@@ -5,7 +5,7 @@ from datetime import datetime, time, timedelta
 from models import db, Empleado, Registro
 
 from registros import registros
-from empleados import empleados
+from employees import employees
 
 app = Flask(__name__, static_url_path='/templates/')
 CORS(app)
