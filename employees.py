@@ -107,7 +107,7 @@ def update_employee(id): #OK
         dni = request.json.get('dni')
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
-        
+
         if first_name:
             employee.first_name = first_name
 
@@ -126,5 +126,5 @@ def update_employee(id): #OK
         db.session.commit() 
         return jsonify({"message": "Employee successfully updated", "employee": employee.toDict()}), 201
     except:
-        return jsonify({"message": "Ha ocurrido un error"}), 400
+        return jsonify({"message": "An unexpected error has occurred"}), 400
 
