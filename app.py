@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:user@localhost:5432/t
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.register_blueprint(registros)
-app.register_blueprint(empleados)
+app.register_blueprint(employees)
 
 
 # Front routes
