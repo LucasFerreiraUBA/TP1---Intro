@@ -1,10 +1,9 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datetime import datetime, time, timedelta
-from models import db, Empleado, Registro
+from models import db
 
-from registros import registros
+from registers import registers
 from employees import employees
 
 app = Flask(__name__, static_url_path='/templates/')
@@ -13,7 +12,7 @@ port = 5000
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:user@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.register_blueprint(registros)
+app.register_blueprint(registers)
 app.register_blueprint(employees)
 
 
