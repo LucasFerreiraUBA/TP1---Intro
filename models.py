@@ -22,7 +22,7 @@ class Employee(db.Model):
     
     
     
-class Registro(db.Model):
+class Registers(db.Model):
     __tablename__ = 'registers'
     id = db.Column(db.Integer, primary_key=True)
     check_timestamp = db.Column(db.DateTime, nullable=False)
