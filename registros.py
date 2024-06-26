@@ -7,10 +7,8 @@ registros = Blueprint('registros', __name__)
 # Constantes
 MAX_REGISTROS = 100
 
-
-# OK
 @registros.route('/api/v1/registros', methods=['GET'])
-def obtener_registros():
+def obtener_registros(): #OK
     try:
         registros = Registro.query.all()
         registros_data = []
@@ -27,37 +25,37 @@ def obtener_registros():
                     'horario_salida': empleado.horario_salida.strftime('%H:%M:%S')
                 },
                 'es_entrada': registro.es_entrada,
-                'desfase': registro.desfase.seconds // 60,
-                'diferencia' : {
-                    'horas' : registro.desfase.seconds // 3600,
-                    'minutos': (registro.desfase.seconds % 3600) // 60,
-                    'segundos' : (registro.desfase.seconds % 60)
-                }
+                'desfase_segundos': registro.desfase_segundos,
             }
             registros_data.append(registro_data)
         return jsonify(registros_data)
     except:
         return jsonify({"error": "No se pudo obtener los registros"}), 400
 
-# OK
 @registros.route('/api/v1/registros/<int:id>', methods=['GET'])
-def obtener_registro(id):
+def obtener_registro(id): #OK
     try:
         registro = Registro.query.get(id)
         registro_data = {
-            'id': registro.id,
-            'horario': registro.horario,
+            'empleado': {
+                'id': registro.id,
+                'horario': registro.horario.isoformat(),
+                'empleado_id': registro.empleado_id,
+                'es_entrada': registro.es_entrada,
+                'desfase_segundos': registro.desfase_segundos,
+                },
+            'horario': registro.horario.isoformat(),
             'empleado_id': registro.empleado_id,
             'es_entrada': registro.es_entrada,
-            'desfase': registro.desfase,
+            'desfase_segundos': registro.desfase_segundos,
         }
         return jsonify(registro_data)
     except:
         return jsonify({"error": "Registro Inexistente"}), 400
 
-# OK
+
 @registros.route('/api/v1/registros', methods=['POST'])
-def agregar_registro():
+def agregar_registro():#Post
     try:
         horario = request.json.get("horario")
         empleado_id = int(request.json.get("empleado_id"))
@@ -68,36 +66,17 @@ def agregar_registro():
             return jsonify({'message': "Employee not found"}), 404
 
         hora_fichaje = datetime.fromisoformat(horario)
-
-        hora_entrada = datetime.combine(hora_fichaje.date(), empleado.horario_entrada)
-        hora_salida = datetime.combine(hora_fichaje.date(), empleado.horario_salida)
-
-        print('hora entrada', hora_entrada)
-        print('hora_salida', hora_salida)
-            
-        diferencia_entrada = abs(hora_fichaje - hora_entrada)
-        diferencia_salida = abs(hora_fichaje - hora_salida)
-
-        print('fichaje', hora_fichaje)
-
-        print('dif entrada', diferencia_entrada)
-        print('dif salida', diferencia_salida)
-
-        es_entrada = diferencia_entrada < diferencia_salida
-
-        diferencia = diferencia_salida
-        if(es_entrada):
-            diferencia = diferencia_entrada
+        (es_entrada, diferencia_segundos) = definir_tipo_registro(hora_fichaje, empleado)
 
         registro = db.session.query(Registro).filter(Registro.horario >= hora_fichaje.date(), Registro.horario < hora_fichaje.date() + timedelta(days=1), Registro.es_entrada == es_entrada,Registro.empleado_id == empleado_id).first()
 
         if registro == None:
             nuevo_registro = Registro(
-            horario=hora_fichaje, empleado_id=empleado_id, es_entrada=es_entrada, desfase=diferencia)
+            horario=hora_fichaje, empleado_id=empleado_id, es_entrada=es_entrada, desfase_segundos=diferencia_segundos)
             db.session.add(nuevo_registro)
         else:
             registro.horario = hora_fichaje,
-            registro.desfase = diferencia
+            registro.desfase_segundos = diferencia_segundos
 
         db.session.commit()
 
@@ -110,9 +89,9 @@ def agregar_registro():
         print(error)
         return jsonify({'message': "Hubo un error"}), 400
 
-# Falta probar
+
 @registros.route('/api/v1/registros/<int:id>', methods=['DELETE'])
-def eliminar_registro(id):
+def eliminar_registro(id): #OK
     try:
         registro = Registro.query.get(id)
         db.session.delete(registro)
@@ -121,17 +100,36 @@ def eliminar_registro(id):
     except:
         return jsonify({"message": "Registro desconocido"}, 400)
 
-# Falta probar
+
 @registros.route('/api/v1/registros/<int:id>', methods=['PUT'])
-def modificar_registro(id):
+def modificar_registro(id):#Falta implementar.
     try:
         registro = Registro.query.get(id)
 
+        if registro == None:
+            return jsonify({'message':'employee does not exist'}),404
         registro.horario = request.json.get("horario")
         registro.empleado_id = request.json.get("empleado_id")
         registro.es_entrada = request.json.get("es_entrada")
-        registro.desfase = request.json.get("desfase")
+
         db.session.commit()
-        return jsonify({"message": "Actualizado Exitosamente"}, 201)
+        return jsonify({"message": 'Register updated successfully'}), 201
     except:
-        return jsonify({"message": "Registro desconocido"}, 400)
+        return jsonify({"message": "Some error has ocurred"}), 400
+
+
+def definir_tipo_registro(hora_fichaje : datetime, empleado: Empleado):
+    #Dado una hora de fichaje, y un empleado devuelve si es una entrada y la diferencia en segundos
+    hora_entrada = datetime.combine(hora_fichaje.date(), empleado.horario_entrada)
+    hora_salida = datetime.combine(hora_fichaje.date(), empleado.horario_salida)
+        
+    diferencia_entrada = hora_fichaje.timestamp() - hora_entrada.timestamp()
+    diferencia_salida = hora_fichaje.timestamp() - hora_salida.timestamp()
+
+    es_entrada = abs(diferencia_entrada) < abs(diferencia_salida)
+
+    diferencia_segundos = diferencia_salida
+    if(es_entrada):
+        diferencia_segundos = diferencia_entrada
+
+    return (es_entrada, diferencia_segundos)
