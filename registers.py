@@ -128,8 +128,8 @@ def get_register_type(check_timestamp : datetime, employee: Employee):
     right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
     right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
         
-    delta_check_in = check_timestamp.timestamp() - right_check_in_time.timestamp()
-    delta_check_out = check_timestamp.timestamp() - right_check_out_time.timestamp()
+    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
+    delta_check_out = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
 
     is_check_in = abs(delta_check_in) < abs(delta_check_out)
 
