@@ -5,7 +5,7 @@ from datetime import datetime, time, timedelta
 from models import db, Empleado, Registro
 
 from registros import registros
-from empleados import empleados
+from employees import employees
 
 app = Flask(__name__, static_url_path='/templates/')
 CORS(app)
@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:user@localhost:5432/t
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.register_blueprint(registros)
-app.register_blueprint(empleados)
+app.register_blueprint(employees)
 
 
 # Front routes
