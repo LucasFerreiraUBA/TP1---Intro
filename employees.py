@@ -14,28 +14,21 @@ def get_employee(id): #OK
         if not employee:
             return jsonify({'message': f'Employee with id:{id} does not exist'}), 400
 
-        employee_data = {
-            'id': employee.id,
-            'first_name': employee.first_name,
-            'last_name': employee.last_name,
-            'dni': employee.dni,
-            'check_in_time': employee.check_in_time.strftime('%H:%M:%S'),
-            'check_out_time': employee.check_out_time.strftime('%H:%M:%S'),
-        }
+        employee_data = employee.toDict()
 
         return jsonify(employee_data), 200
     except:
-        return jsonify({"message": "An unexpected error has occurred"}), 400
+        return jsonify({'message': 'An unexpected error has occurred'}), 400
 
 @employees.route('/api/v1/employees', methods=['GET'])
 def get_employees(): #OK
     try:
-        query_items_limit = request.args.get('limit')
+        query_limit = request.args.get('limit')
 
-        if not query_items_limit:
-            query_items_limit = QUERY_LIMIT
+        if not query_limit:
+            query_limit = QUERY_LIMIT
 
-        employees = Employee.query.limit(query_items_limit).all()
+        employees = Employee.query.limit(query_limit).all()
         employees_list = []
 
         for employee in employees:
@@ -51,11 +44,11 @@ def get_employees(): #OK
 @employees.route('/api/v1/employees', methods=['POST'])
 def add_new_employee():#OK
 
-    fist_name = request.json.get("first_name")
-    last_name = request.json.get("last_name")
-    dni = request.json.get("dni")
-    check_in_time = request.json.get("check_in_time")
-    check_out_time = request.json.get("check_out_time")
+    fist_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
+    dni = request.json.get('dni')
+    check_in_time = request.json.get('check_in_time')
+    check_out_time = request.json.get('check_out_time')
 
     if not (fist_name and last_name and dni and check_in_time and check_out_time):
         return jsonify({'message': 'There is a missing parameter in the body'}), 400
@@ -77,7 +70,7 @@ def add_new_employee():#OK
 
     employee = db.session.query(Employee.id).filter(Employee.dni==dni).first()
 
-    return jsonify({"sucess": f"Added employee with DNI:{dni} ", "id":empleado.id, 'employee': employee.toDict()}), 200 #debe ir sucess para que no aparesca un aviso
+    return jsonify({'sucess': f'Added employee with DNI:{dni} ', 'id':empleado.id, 'employee': employee.toDict()}), 200 #debe ir sucess para que no aparesca un aviso
 
 @employees.route('/api/v1/employees/<int:id>', methods=['DELETE'])
 def delete_employee(id): #OK
@@ -89,9 +82,9 @@ def delete_employee(id): #OK
         db.session.delete(employee)
         db.session.commit()
         
-        return jsonify({"message": "Deleted successfully"}), 201
+        return jsonify({'message': 'Deleted successfully'}), 201
     except:
-        return jsonify({"message": "An unexpected error has occurred"}), 404
+        return jsonify({'message': 'An unexpected error has occurred'}), 404
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['PUT'])
@@ -102,8 +95,8 @@ def update_employee(id): #OK
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
 
-        first_name = request.json.get("first_name")
-        last_name = request.json.get("last_name")
+        first_name = request.json.get('first_name')
+        last_name = request.json.get('last_name')
         dni = request.json.get('dni')
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
@@ -124,7 +117,7 @@ def update_employee(id): #OK
             employee.check_out_time = check_out_time
         
         db.session.commit() 
-        return jsonify({"message": "Employee successfully updated", "employee": employee.toDict()}), 201
+        return jsonify({'message': 'Employee successfully updated', 'employee': employee.toDict()}), 201
     except:
-        return jsonify({"message": "An unexpected error has occurred"}), 400
+        return jsonify({'message': 'An unexpected error has occurred'}), 400
 
