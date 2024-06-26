@@ -35,21 +35,12 @@ def front_edit_employee():
 
 @app.route('/empleados', methods=['GET'])
 def empleados():
-    empleados = [
-        {
-            'nombre': 'juan'
-        },
-        {
-            'nombre': 'lucas'
-        }
-    ]
-    return render_template('empleados/empleados.html', empleados=empleados)
+    return render_template('empleados/empleados.html')
 
 
 @app.route('/empleados/<int:id>', methods=['GET'])
 def empleado(id):
-    empleado = Empleado.query.get(id)
-    return render_template('empleados/empleado.html', empleado=empleado)
+    return render_template('empleados/empleado.html')
 
 
 @app.route('/registros/agregar', methods=['GET'])
