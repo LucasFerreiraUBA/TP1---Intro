@@ -11,7 +11,7 @@ class Employee(db.Model):
     dni = db.Column(db.String(255), unique=True, nullable=False)
     check_in_time = db.Column(db.Time, nullable=False)
     check_out_time = db.Column(db.Time, nullable=False)
-    registers = db.relationship("Registers")
+    registers = db.relationship("Register")
     
     def __init__(self, first_name, last_name, dni, check_in_time, check_out_time):
         self.first_name = first_name
