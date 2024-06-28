@@ -85,7 +85,7 @@ def delete_employee(id): #OK
         db.session.delete(employee)
         db.session.commit()
         
-        return jsonify({'success': 'Deleted successfully'}), 201
+        return jsonify({'success': 'Deleted successfully', 'employee': employee.toDict() }), 201
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 404
 
