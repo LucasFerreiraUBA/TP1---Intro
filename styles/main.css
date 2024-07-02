@@ -1,0 +1,22 @@
+/*Este archivo lo usamos para todos los templates que tengan cosas en común, así no repetimos código y luego cada template importa su estilo en particular*/
+
+/* Reglas generales */
+@import url(general.css);
+@import url(botones.css);
+@import url(footer.css);
+html{
+    min-height: 100vh;
+}
+main{
+    background-color: #e7e9eb;
+    display: grid;
+    place-content: center;
+    min-height: 90vh;
+}
+.opciones{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    padding: 10px;
+}

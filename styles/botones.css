@@ -1,0 +1,10 @@
+.boton{
+    background-color: #04aa6d;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+}
+.boton h1,h2{
+    color:#fff
+}
