@@ -1,4 +1,4 @@
-from models import db, Employee, Register
+from models import db, Employee
 from flask import  jsonify, request, Blueprint
 
 QUERY_LIMIT = 100
