@@ -21,17 +21,21 @@ app.register_blueprint(employees)
 def indice():
     return render_template('index.html')
 
+
 @app.route('/fichar', methods=['GET'])
 def front_fichar_empleado():
     return render_template('fichar/fichar.html')
+
 
 @app.route('/empleados/agregar', methods=['GET'])
 def front_create_employee():
     return render_template('empleados/agregar/agregar.html')
 
+
 @app.route('/empleados/editar', methods=['GET'])
 def front_edit_employee():
     return render_template('empleados/editar/editar.html')
+
 
 @app.route('/empleados', methods=['GET'])
 def empleados():
@@ -55,9 +59,8 @@ def front_registros():
 
 db.init_app(app)
 
-if __name__ == '__main__': 
-    
+if __name__ == '__main__':
     with app.app_context():
-        #db.drop_all()
+        # db.drop_all()
         db.create_all()
     app.run(debug=True, port=port)

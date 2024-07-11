@@ -1,5 +1,5 @@
 from models import db, Employee
-from flask import  jsonify, request, Blueprint
+from flask import jsonify, request, Blueprint
 
 QUERY_LIMIT = 100
 
@@ -7,7 +7,7 @@ employees = Blueprint('employees', __name__)
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['GET'])
-def get_employee(id): #OK
+def get_employee(id):  # OK
     try:
         employee = Employee.query.get(id)
 
@@ -20,20 +20,21 @@ def get_employee(id): #OK
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 400
 
+
 @employees.route('/api/v1/employees', methods=['GET'])
-def get_employees(): #OK
+def get_employees():  # OK
     try:
         query_limit = request.args.get('limit')
 
         if not query_limit:
             query_limit = QUERY_LIMIT
 
-        employees = Employee.query.limit(query_limit).all()
+        all_employees = Employee.query.limit(query_limit).all()
         employees_list = []
 
-        for employee in employees:
+        for employee in all_employees:
             employee_data = employee.toDict()
-            
+
             employees_list.append(employee_data)
 
         return jsonify(employees_list), 200
@@ -42,7 +43,7 @@ def get_employees(): #OK
 
 
 @employees.route('/api/v1/employees', methods=['POST'])
-def add_new_employee():#OK
+def add_new_employee():  # OK
 
     first_name = request.json.get('first_name')
     last_name = request.json.get('last_name')
@@ -51,11 +52,11 @@ def add_new_employee():#OK
     check_out_time = request.json.get('check_out_time')
 
     if not (first_name and last_name and dni and check_in_time and check_out_time):
-        return jsonify({'message': 'There is a missing parameter in the body'}), 400
-    
-    empleado = db.session.query(Employee.id).filter(Employee.dni==dni).first()
-    
-    if empleado != None:
+        return jsonify({'message': 'There is a missing paramester in the body'}), 400
+
+    employee = db.session.query(Employee).filter(Employee.dni == dni).first()
+
+    if employee is not None:
         return jsonify({'message': 'There is already a employee with the same DNI'}), 400
 
     new_employee = Employee(
@@ -64,34 +65,33 @@ def add_new_employee():#OK
         dni=dni,
         check_in_time=check_in_time,
         check_out_time=check_out_time
-        )
+    )
     db.session.add(new_employee)
     db.session.commit()
 
-    employee = db.session.query(Employee).filter(Employee.dni==dni).first()
+    employee = db.session.query(Employee).filter(Employee.dni == dni).first()
 
-    if employee is None:
-        print("employee was not created")
+    return jsonify({'success': f'Added employee with DNI:{dni} ', 'employee': employee.toDict()}), 200
 
-    return jsonify({'success': f'Added employee with DNI:{dni} ', 'employee': employee.toDict() }), 200
 
 @employees.route('/api/v1/employees/<int:id>', methods=['DELETE'])
-def delete_employee(id): #OK
+def delete_employee(id):  # OK
     try:
         employee = Employee.query.get(id)
 
-        if employee == None:
+        if employee is None:
             return jsonify({'message': 'Employee not found'})
+
         db.session.delete(employee)
         db.session.commit()
-        
-        return jsonify({'success': 'Deleted successfully', 'employee': employee.toDict() }), 201
+
+        return jsonify({'success': 'Deleted successfully', 'employee': employee.toDict()}), 201
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 404
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['PUT'])
-def update_employee(id): #OK
+def update_employee(id):  # OK
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -118,9 +118,8 @@ def update_employee(id): #OK
 
         if check_out_time:
             employee.check_out_time = check_out_time
-        
-        db.session.commit() 
+
+        db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 400
-
