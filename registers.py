@@ -144,13 +144,17 @@ def get_register_type(check_timestamp: datetime, employee: Employee):
     right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
     right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
 
-    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
-    delta_check_out = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
+    a = check_timestamp.timestamp()
+    b = right_check_in_datetime.timestamp()
+    c = right_check_out_datetime.timestamp()
+
+    delta_check_in = b - a
+    delta_check_out = a  -c
 
     is_check_in = abs(delta_check_in) < abs(delta_check_out)
 
     deviation_seconds = delta_check_out
     if is_check_in:
-        deviation_seconds = delta_check_in
+        deviation_seconds = -delta_check_in
 
     return is_check_in, deviation_seconds
