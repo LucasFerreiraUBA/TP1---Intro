@@ -18,10 +18,10 @@ def get_registers():  # OK
 
             register_data = {
                 'id': register.id,
-                'timestamp': register.horario.isoformat(),
+                'timestamp': register.check_timestamp.isoformat(),
                 'employee': {
-                    'first_name': employee.nombre,
-                    'last_name': employee.apellido,
+                    'first_name': employee.first_name,
+                    'last_name': employee.last_name,
                     'check_in_time': employee.check_in_time.strftime('%H:%M:%S'),
                     'check_out_time': employee.check_out_time.strftime('%H:%M:%S')
                 },
@@ -51,7 +51,7 @@ def get_register(id):  # OK
                 'dni': employee.dni,
             },
             'is_check_in': register.is_check_in,
-            'check_timestamp': register.horario.isoformat(),
+            'check_timestamp': register.check_timestamp.isoformat(),
             'deviation_seconds': register.deviation_seconds,
         }
         return jsonify(register_data), 200
@@ -73,8 +73,8 @@ def add_new_register():  # OK
         check_datetime = datetime.fromisoformat(timestamp)
         (is_check_in, deviation_seconds) = get_register_type(check_datetime, employee)
 
-        register = db.session.query(Register).filter(Register.horario >= check_datetime.date(),
-                                                     Register.horario < check_datetime.date() + timedelta(days=1),
+        register = db.session.query(Register).filter(Register.check_timestamp >= check_datetime.date(),
+                                                     Register.check_timestamp < check_datetime.date() + timedelta(days=1),
                                                      Register.is_check_in == is_check_in,
                                                      Register.employee_id == employee_id).first()
 
@@ -95,6 +95,7 @@ def add_new_register():  # OK
             return jsonify({"message": "The register was updated successfully"}), 201
 
     except Exception as error:
+        print(error)
         return jsonify({'message': "An unexpecter error has occurred"}), 400
 
 
