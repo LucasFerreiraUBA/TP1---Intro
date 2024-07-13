@@ -11,9 +11,9 @@ QUERY_LIMIT = 100
 @registers.route('/api/v1/registers', methods=['GET'])
 def get_registers():  # OK
     try:
-        registers = Register.query.all()
+        registers_list = Register.query.all()
         registers_data = []
-        for register in registers:
+        for register in registers_list:
             employee = db.session.query(Employee).get(register.employee_id)
 
             register_data = {
@@ -92,7 +92,7 @@ def add_new_register():  # OK
         if register is None:
             return jsonify({"message": "New register added successfully"}), 201
         else:
-            return jsonify({"message": "The register was updated succesfully"}), 201
+            return jsonify({"message": "The register was updated successfully"}), 201
 
     except Exception as error:
         return jsonify({'message': "An unexpecter error has occurred"}), 400
@@ -111,21 +111,30 @@ def delete_register(id):  # OK
 
 
 @registers.route('/api/v1/registers/<int:id>', methods=['PUT'])
-def update_register(id):  # Falta implementar
+def update_register(id):
     try:
         register = Register.query.get(id)
 
         if register is None:
             return jsonify({'message': 'employee does not exist'}), 404
-        register.check_time = request.json.get("check_time")
-        register.employee_id = request.json.get("employee_id")
-        register.is_check_in = request.json.get("is_check_in")
+
+        check_time = request.json.get("check_timestamp")
+        if not check_time is None:
+            register.check_time = check_time
+
+        employee_id = request.json.get("employee_id")
+        if not employee_id is None:
+            register.employee_id = employee_id
+
+        is_check_in = request.json.get("is_check_in")
+        if not is_check_in is None:
+            register.is_check_in = is_check_in
 
         db.session.commit()
 
         return jsonify({"message": 'Register updated successfully'}), 201
     except:
-        return jsonify({"message": "Some error has ocurred"}), 400
+        return jsonify({"message": "Some error has occurred"}), 400
 
 
 def get_register_type(check_timestamp: datetime, employee: Employee):
