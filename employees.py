@@ -49,14 +49,14 @@ def add_new_employee():  # OK
     last_name = request.json.get('last_name')
     dni = request.json.get('dni')
     check_in_time = request.json.get('check_in_time')
-    check_out_time = request.json.get('check_out_time')
+    check_out_time = request.json.get('check_out_time') 
 
-    if not (first_name and last_name and dni and check_in_time and check_out_time):
+    if not all([first_name, last_name, dni, check_in_time, check_out_time]):
         return jsonify({'message': 'There is a missing paramester in the body'}), 400
 
     employee = db.session.query(Employee).filter(Employee.dni == dni).first()
 
-    if employee is not None:
+    if not (employee is None):
         return jsonify({'message': 'There is already a employee with the same DNI'}), 400
 
     new_employee = Employee(
@@ -118,7 +118,7 @@ def update_employee(id):  # OK
 
         if check_out_time:
             employee.check_out_time = check_out_time
-
+            
         db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
     except:
