@@ -104,22 +104,19 @@ def update_employee(id):  # OK
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
 
-        if first_name:
-            employee.first_name = first_name
+        employee.first_name = edit_attr_emp(employee.first_name, first_name)
+        employee.last_name = edit_attr_emp(employee.last_name, last_name)
+        employee.dni = edit_attr_emp(employee.dni, dni)
+        employee.check_in_time = edit_attr_emp(employee.check_in_time, check_in_time)
+        employee.check_out_time = edit_attr_emp(employee.check_out_time, check_out_time)
 
-        if last_name:
-            employee.last_name = last_name
-
-        if dni:
-            employee.dni = dni
-
-        if check_in_time:
-            employee.check_in_time = check_in_time
-
-        if check_out_time:
-            employee.check_out_time = check_out_time
-            
         db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 400
+
+##Aux Function
+def edit_attr_emp(actual, nuevo):
+    if nuevo == None:
+        return actual
+    return nuevo
