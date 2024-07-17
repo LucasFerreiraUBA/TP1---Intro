@@ -8,7 +8,8 @@ employees = Blueprint('employees', __name__)
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['GET'])
-def get_employee(id):  # OK
+def get_employee(id):
+    #Devuelve los datos de un empleado dado un @id.
     try:
         employee = Employee.query.get(id)
 
@@ -23,7 +24,8 @@ def get_employee(id):  # OK
 
 
 @employees.route('/api/v1/employees', methods=['GET'])
-def get_employees():  # OK
+def get_employees():
+    #Devuelve una lista de todos los empleados.
     try:
         query_limit = request.args.get('limit')
 
@@ -45,7 +47,8 @@ def get_employees():  # OK
 
 
 @employees.route('/api/v1/employees', methods=['POST'])
-def add_new_employee():  # OK
+def add_new_employee():
+    #Agrega un nuevo empleado con los datos presentes en el body.
 
     first_name = request.json.get('first_name')
     last_name = request.json.get('last_name')
@@ -77,7 +80,8 @@ def add_new_employee():  # OK
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['DELETE'])
-def delete_employee(id):  # OK
+def delete_employee(id):
+    #Elimina a un empleado dado su @id.
     try:
         employee = Employee.query.get(id)
 
@@ -93,7 +97,8 @@ def delete_employee(id):  # OK
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['PUT'])
-def update_employee(id):  # OK
+def update_employee(id):
+    #Dado un empleado mediante su @id, actualiza sus datos presentes en el body.
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -115,11 +120,11 @@ def update_employee(id):  # OK
         db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
     except:
-        return jsonify({'message': 'An unexpected error has occurred'}), 400
+        return jsonify({'error': 'An unexpected error has occurred'}), 400
 
 @employees.route('/api/v1/employees/<int:id>/registers/unpunctual/', methods=['GET'])
 def get_employee_unpunctual_registers(id):
-    #Dada una toleancia y un id de empleado, devuelve las llegadas tardes o 
+    #Dada una toleancia de entrada y salida, ademas de un @id de empleado, devuelve los registros inpuntuales.
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -156,7 +161,7 @@ def get_employee_unpunctual_registers(id):
 
 @employees.route('/api/v1/employees/<int:id>/registers/', methods=['GET'])
 def get_employee_registers(id):
-    #Dada una toleancia y un id de empleado, devuelve las llegadas tardes o 
+    #Dado un empleado mediante su @id, devuelve sus registros de entrada y salida.
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -175,7 +180,7 @@ def get_employee_registers(id):
     
     except Exception as error:
         print(error)
-        return jsonify({'message':'error'})
+        return jsonify({'error':'An unexpected error had occurred'}),400
     
 ##Aux Function
 def edit_attr_emp(actual, nuevo):
