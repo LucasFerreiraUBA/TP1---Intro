@@ -1,6 +1,6 @@
 from models import db, Employee, Register
 from flask import  jsonify, request, Blueprint
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 QUERY_LIMIT = 100
 
@@ -117,8 +117,8 @@ def update_employee(id):  # OK
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 400
 
-@employees.route('/api/v1/employees/<int:id>/registers/', methods=['GET'])
-def get_employee_registers_by_delay(id):
+@employees.route('/api/v1/employees/<int:id>/registers/unpunctual/', methods=['GET'])
+def get_employee_unpunctual_registers(id):
     #Dada una toleancia y un id de empleado, devuelve las llegadas tardes o 
     try:
         employee = db.session.query(Employee).get(id)
@@ -137,9 +137,12 @@ def get_employee_registers_by_delay(id):
         entering_tolerancy_seconds = entering_tolerancy * 60
         leaving_tolerancy_seconds = leaving_tolerancy * 60
         
-        register_list = db.session.query(Register).filter(Register.is_check_in, Register.deviation_seconds > entering_tolerancy_seconds).all()
-        #Corregir, para que ambas querys se hagan a la vez
-        register_list = db.session.query(Register).filter(Register.is_check_in == False, Register.deviation_seconds < leaving_tolerancy_seconds).all()
+        register_list = db.session.query(Register).filter(
+            or_(
+            and_(Register.is_check_in == True, Register.deviation_seconds > entering_tolerancy_seconds),
+            and_(Register.is_check_in == False, Register.deviation_seconds < leaving_tolerancy_seconds)
+            )
+            ).all()
 
         registers_data = []
         for register in register_list:
@@ -147,8 +150,29 @@ def get_employee_registers_by_delay(id):
             registers_data.append(register_data)
 
         return jsonify(registers_data),201
+    except Exception as error:
+        print(error)
+        return jsonify({'error':'An unexpected error had occurred'}),400
 
+@employees.route('/api/v1/employees/<int:id>/registers/', methods=['GET'])
+def get_employee_registers(id):
+    #Dada una toleancia y un id de empleado, devuelve las llegadas tardes o 
+    try:
+        employee = db.session.query(Employee).get(id)
 
+        if not employee:
+            return jsonify({'message': 'Employee not found'}), 404
+        
+        
+        register_list = db.session.query(Register).filter(Register.employee_id == employee.id).all()
+
+        registers_data = []
+        for register in register_list:
+            register_data = register.toDict()
+            registers_data.append(register_data)
+
+        return jsonify(registers_data),201
+    
     except Exception as error:
         print(error)
         return jsonify({'message':'error'})

@@ -19,12 +19,7 @@ def get_registers():  # OK
             register_data = {
                 'id': register.id,
                 'timestamp': register.check_timestamp.isoformat(),
-                'employee': {
-                    'first_name': employee.first_name,
-                    'last_name': employee.last_name,
-                    'check_in_time': employee.check_in_time.strftime('%H:%M:%S'),
-                    'check_out_time': employee.check_out_time.strftime('%H:%M:%S')
-                },
+                'employee': employee.toDict(),
                 'is_check_in': register.is_check_in,
                 'deviation_seconds': register.deviation_seconds,
             }

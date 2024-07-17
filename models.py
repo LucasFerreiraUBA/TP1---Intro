@@ -49,7 +49,7 @@ class Register(db.Model):
     def toDict(self):
         return {
             'is_check_in':self.is_check_in,
-            'check_timestamp':self.check_timestamp,
+            'check_timestamp':self.check_timestamp.isoformat(),
             'deviation_seconds':self.deviation_seconds,
             'id':self.id
         }
