@@ -1,5 +1,6 @@
-from models import db, Employee
-from flask import jsonify, request, Blueprint
+from models import db, Employee, Register
+from flask import  jsonify, request, Blueprint
+from sqlalchemy import or_
 
 QUERY_LIMIT = 100
 
@@ -38,7 +39,8 @@ def get_employees():  # OK
             employees_list.append(employee_data)
 
         return jsonify(employees_list), 200
-    except:
+    except Exception as error:
+        print(error)
         return jsonify({'message': 'An unexpected error has occurred'}), 500
 
 
@@ -115,6 +117,35 @@ def update_employee(id):  # OK
     except:
         return jsonify({'message': 'An unexpected error has occurred'}), 400
 
+@employees.route('/api/v1/employees/<int:id>/registers/<int:entering_tolerancy><int:leaving_tolerancy>', methods=['GET'])
+def get_employee_registers_by_delay(id, entering_tolerancy, leaving_tolerancy):
+    #Dada una toleancia y un id de empleado, devuelve las llegadas tardes o 
+    try:
+        employee = db.session.query(Employee).get(id)
+
+        if not employee:
+            return jsonify({'message': 'Employee not found'}), 404
+        
+        entering_tolerancy_seconds = entering_tolerancy * 60
+        leaving_tolerancy_seconds = leaving_tolerancy * 60
+        
+        register_list = db.session.query(Register).filter(
+            or_(
+                (Register.is_check_in, Register.deviation_seconds > entering_tolerancy_seconds),
+                (Register.is_check_in == False, Register.deviation_seconds < leaving_tolerancy_seconds)
+                )
+        ).all()
+
+        registers_data = []
+        for register in register_list:
+            register_data = register.toDict()
+
+        return jsonify(registers_data),201
+
+
+    except:
+        return jsonify({'message':'error'})
+    
 ##Aux Function
 def edit_attr_emp(actual, nuevo):
     if nuevo == None:
