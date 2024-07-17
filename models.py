@@ -45,3 +45,11 @@ class Register(db.Model):
         self.deviation_seconds = deviation_seconds
         self.employee_id = employee_id
         self.is_check_in = is_check_in
+
+    def toDict(self):
+        return {
+            'is_check_in':self.is_check_in,
+            'check_timestamp':self.check_timestamp,
+            'deviation_seconds':self.deviation_seconds,
+            'id':self.id
+        }

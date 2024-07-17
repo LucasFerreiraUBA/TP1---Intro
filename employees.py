@@ -143,9 +143,7 @@ def get_employee_registers_by_delay(id, entering_tolerancy, leaving_tolerancy):
 
         registers_data = []
         for register in register_list:
-            register_data = {
-                
-            }
+            register_data = register.toDict()
 
         return jsonify(registers_data),201
 
