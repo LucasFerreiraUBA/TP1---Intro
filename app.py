@@ -6,7 +6,7 @@ from registers import registers
 from employees import employees
 
 app = Flask(__name__, static_url_path='/templates/')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://jarro:45077367@localhost:5432/tpdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:user@localhost:5432/tpdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
 PORT = 5000
