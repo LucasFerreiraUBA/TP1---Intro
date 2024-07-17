@@ -38,7 +38,8 @@ def get_employees(): #OK
             employees_list.append(employee_data)
 
         return jsonify(employees_list), 200
-    except:
+    except Exception as error:
+        print(error)
         return jsonify({'message': 'An unexpected error has occurred'}), 500
 
 
