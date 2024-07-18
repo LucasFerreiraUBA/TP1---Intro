@@ -9,8 +9,12 @@ QUERY_LIMIT = 100
 
 
 @registers.route('/api/v1/registers', methods=['GET'])
-def get_registers():  # OK
+def get_registers():
+    #Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
     try:
+
+        query_limit = request.args.get('limit')
+
         registers_list = Register.query.all()
         registers_data = []
         for register in registers_list:
@@ -30,7 +34,8 @@ def get_registers():  # OK
 
 
 @registers.route('/api/v1/registers/<int:id>', methods=['GET'])
-def get_register(id):  # OK
+def get_register(id):
+    #Obtiene los detalles de un registro dado si @id 
     try:
         register = Register.query.get(id)
         employee = db.session.query(Employee).get(register.employee_id)
@@ -55,7 +60,11 @@ def get_register(id):  # OK
 
 
 @registers.route('/api/v1/registers', methods=['POST'])
-def add_new_register():  # OK
+def add_new_register():
+    #Agrega un nuevo registro con los datos que hay en el body.
+    #Si el registro ya existe, lo actualiza siempre y cuando:
+    #   Si el registro es proximo al horario de entrada: Cuando no es posterior al vigente.
+    #   Si el registro es  proximo al horario de salida: Cuando es posterior al vigente.
     try:
         timestamp = request.json.get("timestamp")
         employee_id = int(request.json.get("employee_id"))
@@ -95,7 +104,8 @@ def add_new_register():  # OK
 
 
 @registers.route('/api/v1/registers/<int:id>', methods=['DELETE'])
-def delete_register(id):  # OK
+def delete_register(id):
+    #Elimina un registro dado un @id
     try:
         register = db.session.query(Register).get(id)
         db.session.delete(register)
@@ -108,6 +118,7 @@ def delete_register(id):  # OK
 
 @registers.route('/api/v1/registers/<int:id>', methods=['PUT'])
 def update_register(id):
+    #Actualiza los datos de un registro dado su @id con los datos del body.
     try:
         register = Register.query.get(id)
 
