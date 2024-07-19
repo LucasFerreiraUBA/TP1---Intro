@@ -2,6 +2,7 @@ from models import db, Employee, Register
 from flask import  jsonify, request, Blueprint
 from sqlalchemy import or_, and_
 
+
 QUERY_LIMIT = 100
 
 employees = Blueprint('employees', __name__)
@@ -111,16 +112,17 @@ def update_employee(id):
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
 
-        employee.first_name = edit_attr_emp(employee.first_name, first_name)
-        employee.last_name = edit_attr_emp(employee.last_name, last_name)
-        employee.dni = edit_attr_emp(employee.dni, dni)
-        employee.check_in_time = edit_attr_emp(employee.check_in_time, check_in_time)
-        employee.check_out_time = edit_attr_emp(employee.check_out_time, check_out_time)
+        employee.first_name = replace_attr(employee.first_name, first_name)
+        employee.last_name = replace_attr(employee.last_name, last_name)
+        employee.dni = replace_attr(employee.dni, dni)
+        employee.check_in_time = replace_attr(employee.check_in_time, check_in_time)
+        employee.check_out_time = replace_attr(employee.check_out_time, check_out_time)
 
         db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
     except:
         return jsonify({'error': 'An unexpected error has occurred'}), 400
+
 
 @employees.route('/api/v1/employees/<int:id>/registers/unpunctual/', methods=['GET'])
 def get_employee_unpunctual_registers(id):
@@ -131,17 +133,12 @@ def get_employee_unpunctual_registers(id):
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
         
-        entering_tolerancy = int(request.args.get('entering_tolerancy'))
-        if entering_tolerancy is None:
-            entering_tolerancy = 0
-
-        leaving_tolerancy = int(request.args.get('leaving_tolerancy'))
-        if leaving_tolerancy is None:
-            leaving_tolerancy = 0
-
+        entering_tolerancy = int(request.args.get('entering_tolerancy', 0)) # curl -X GET "http://127.0.0.1:5000/api/v1/employees/1/registers?entering_tolerancy=5&leaving_tolerancy=6"
+        leaving_tolerancy = int(request.args.get('leaving_tolerancy', 0)) # Da cero si no esta escrito el param en la url
+        
         entering_tolerancy_seconds = entering_tolerancy * 60
         leaving_tolerancy_seconds = leaving_tolerancy * 60
-        
+
         register_list = db.session.query(Register).filter(
             or_(
             and_(Register.is_check_in == True, Register.deviation_seconds > entering_tolerancy_seconds),
@@ -150,6 +147,7 @@ def get_employee_unpunctual_registers(id):
             ).all()
 
         registers_data = []
+      
         for register in register_list:
             register_data = register.toDict()
             registers_data.append(register_data)
@@ -181,9 +179,10 @@ def get_employee_registers(id):
     except Exception as error:
         print(error)
         return jsonify({'error':'An unexpected error had occurred'}),400
+
     
-##Aux Function
-def edit_attr_emp(actual, nuevo):
-    if nuevo == None:
-        return actual
-    return nuevo
+#Aux Function
+def replace_attr(current, new):
+    if new == None:
+        return current
+    return new
