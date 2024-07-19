@@ -34,7 +34,7 @@
             .catch((error) => console.log("error", error))
 
         function handle_response(data) {
-            if (data.sucess) {
+            if (data.success) {
                 alert("Registro agregado")
             }else {
                 alert("Error al crear registro")
@@ -45,7 +45,10 @@
             event.preventDefault()
             const formData = new FormData(event.target)
             const employee_id = formData.get("employees")
-            const timestamp = formData.get("timestamp") //falta que se calcule el día para ponerlo en el cuerpo del fetch
+            const timestamp = formData.get("timestamp")
+            const date = new Date()
+            const date_str = date.toISOString().split('T')[0]
+            const check_timestamp = `${date_str}T${timestamp}`
 
             fetch(`http://localhost:5000/api/v1/registers`,
             {
@@ -53,7 +56,7 @@
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
                     employee_id: employee_id,
-                    check_timestamp: check_timestamp,
+                    timestamp: check_timestamp,
                 })
             })
             .then((res) => res.json())
