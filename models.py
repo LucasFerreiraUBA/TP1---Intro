@@ -12,7 +12,7 @@ class Employee(db.Model):
     dni = db.Column(db.String(255), unique=True, nullable=False)
     check_in_time = db.Column(db.Time, nullable=False)
     check_out_time = db.Column(db.Time, nullable=False)
-    registers = db.relationship("Register")
+    registers = db.relationship("register")
 
     def __init__(self, first_name, last_name, dni, check_in_time, check_out_time):
         self.first_name = first_name
@@ -49,7 +49,7 @@ class Register(db.Model):
     def toDict(self):
         return {
             'is_check_in':self.is_check_in,
-            'check_timestamp':self.check_timestamp,
+            'check_timestamp':self.check_timestamp.isoformat(),
             'deviation_seconds':self.deviation_seconds,
             'id':self.id
         }
