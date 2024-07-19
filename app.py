@@ -50,9 +50,9 @@ def front_agregar_registro():
     return render_template('registros/nuevo_registro.html')
 
 
-@app.route('/registros', methods=['GET'])
+@app.route('/registers', methods=['GET'])
 def front_registros():
-    return render_template('registros/nuevo_registro.html')
+    return render_template('registers/registers.html')
 
 
 db.init_app(app)

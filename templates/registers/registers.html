@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Empleados</title>
+    </head>
+    <body>
+        <h1>Registers:</h1>
+        <ul id="registers_list">
+
+        </ul>
+
+        <script type="module">
+            function parse_data(content) {
+                const container = document.getElementById("registers_list");
+                const element = document.createElement('div')
+
+                for (const item of content) {
+                    const date = document.createElement("p");
+                    const fullname = document.createElement('p')
+                    const deviation = document.createElement('p')
+
+                    let dt = new Date(item.timestamp.substring(0,10))
+                    console.log(dt.getHours())
+                    console.log(dt)
+                    date.innerText = `${dt.getDate()}/${dt.getMonth()}/${dt.getFullYear()}`;
+                    fullname.innerText = `${item.employee.last_name}, ${item.employee.first_name}`
+                    
+                    
+                    element.append(date, fullname);
+                    container.append(element)
+                }
+            }
+
+            fetch("http://localhost:5000/api/v1/registers")
+                .then((res) => res.json())
+                .then(parse_data)
+                .catch((error) => console.log("ERROR", error))
+        </script>
+    </body>
+</html>
