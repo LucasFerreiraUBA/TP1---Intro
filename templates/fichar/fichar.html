@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,63 +7,56 @@
 </head>
 <body>
     <h2> Agregar Registro Nuevo</h2>
-    <form onsubmit="create_record(event)">
-        <label for="empleados">Lista de Empleados:</label>
-        <select id="empleados" name="empleados" required>
+    <form onsubmit="create_register(event)">
+        <label for="employees">Lista de Empleados:</label>
+        <select id="employees" name="employees" required>
         </select>
 
-        <label for="horario">Tipo de horario:</label>
-        <input type="radio" name="horario" value="entrada" id="horario-entrada" required>
-        <label for="horario-entrada">Entrada</label>
-
-        <input  type="radio" name="horario" value="salida" id="horario-salida" required>
-        <label for="horario-salida">Salida</label>
-
-        <label for="hora">Horario de llegada/salida</label>
-        <input type="time" id="hora" name="hora" placeholder="10:00" required>
+        <label for="timestamp">Hora de Llegada/Salida</label>
+        <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
        
-        <button>Submit</button>
+        <button>Hecho</button>
     </form>
     <script>
         function handle_get_response(data) {
-            const lista = document.getElementById("empleados")
+            const employees = document.getElementById("employees")
             for (const item of data) {
-                console.log(item)
                 const opcion = document.createElement("option")
-                opcion.innerText = item.nombre + ", " + item.apellido
+                opcion.innerText = item.first_name + ", " + item.last_name
                 opcion.setAttribute("value", `${item.id}`)
-                lista.append(opcion);
+                employees.append(opcion);
             }
         }
 
-        fetch(`http://localhost:5000/api/v1/empleados`, {method:"GET"})
+        fetch(`http://localhost:5000/api/v1/employees`, {method:"GET"})
             .then((res) => res.json())
             .then(handle_get_response)
-            .catch((error) => console.log("ERROR", error))
+            .catch((error) => console.log("error", error))
 
         function handle_response(data) {
-            if (data.sucess) {
+            if (data.success) {
                 alert("Registro agregado")
             }else {
                 alert("Error al crear registro")
             }
         }
 
-        function create_record(event) {
+        function create_register(event) {
             event.preventDefault()
             const formData = new FormData(event.target)
-            const id_empleado = formData.get("empleados")
-            const es_entrada = formData.get("horario")
-            const hora = formData.get("hora")
-            // const desfase = ? 
+            const employee_id = formData.get("employees")
+            const timestamp = formData.get("timestamp")
+            const date = new Date()
+            const date_str = date.toISOString().split('T')[0]
+            const check_timestamp = `${date_str}T${timestamp}`
 
-            fetch(`http://localhost:5000/api/v1/registros`, {method:"POST",
+            fetch(`http://localhost:5000/api/v1/registers`,
+            {
+                method:"POST",
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({
-                    horario: hora,
-                    empleado_id: id_empleado,
-                    es_entrada: es_entrada,
-                    desfase: desfase,
+                    employee_id: employee_id,
+                    timestamp: check_timestamp,
                 })
             })
             .then((res) => res.json())
@@ -71,6 +64,5 @@
             .catch((error) => console.log("ERROR", error))
         }
     </script>
-
 </body>
 </html>
