@@ -13,11 +13,14 @@ def get_registers():
     #Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
     try:
         query_limit = request.args.get('limit')
-
-        registers_list = Register.query.all()
+        
+        if query_limit is None:
+            query_limit = QUERY_LIMIT
+        
+        registers_list = db.session.query(Register).limit(query_limit)
 
         registers_data = []
-        for register in registers:
+        for register in registers_list:
             employee = db.session.query(Employee).get(register.employee_id)
 
             register_data = {
@@ -44,12 +47,7 @@ def get_register(id):
             return jsonify({'message': 'Employee not found'})
 
         register_data = {
-            'employee': {
-                'id': employee.id,
-                'first_name': employee.first_name,
-                'last_name': employee.last_name,
-                'dni': employee.dni,
-            },
+            'employee': employee.toDict(), 
             'is_check_in': register.is_check_in,
             'check_timestamp': register.check_timestamp.isoformat(),
             'deviation_seconds': register.deviation_seconds,
