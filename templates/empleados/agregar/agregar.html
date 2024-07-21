@@ -29,7 +29,7 @@
         function handle_response(data) {
             if (data.success) {
                 alert("Se pudo crear el empleado")
-                window.location.href = `/empleados/${data.id}`
+                window.location.href = `/empleados`
             } else {
                 alert(`error: ${data.message}`)
             }

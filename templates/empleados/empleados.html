@@ -6,24 +6,55 @@
         <title>Empleados</title>
     </head>
     <body>
+        <a href="empleados/agregar">Agregar</a>
         <h1>Empleados:</h1>
         <ul id="employees_list"></ul>
 
-        <script type="module">
-            function parse_data(content) {
-                const container = document.getElementById("employees_list");
-
-                for (const item of content) {
-                const elem = document.createElement("p");
-                elem.innerText = item.nombre;
-                container.append(elem);
+        <script>
+            function handle_delete_request(data) {
+                if (data.success) {
+                    alert("Empleado Borrado Exitosamente!")
+                } else {
+                    alert("Error. No se pudo eliminar")
                 }
             }
 
-            fetch("http://localhost:5000/api/v1/empleados")
+            function delete_employee(id) {
+                const popup = confirm("¿Estás seguro de eliminar al empleado?")
+                if (popup) {
+                    fetch(`http://localhost:5000/api/v1/employees/${id}`, {method:"DELETE"})
+                    .then((res) => res.json())
+                    .then(handle_delete_request)
+                    .catch((error) => console.log("error:", error))
+                    const container_employee = document.getElementById(id)
+                    container_employee.remove()
+                } 
+            }
+
+            function handle_data(data) {
+                const container = document.getElementById("employees_list")
+                for (const item of data) {
+                    const elem = document.createElement("div")
+                    elem.setAttribute("id", `${item.id}`)
+                    const employee = document.createElement("p")
+                    employee.innerText = `${item.last_name}, ${item.first_name}`
+                    const delete_button = document.createElement("button")
+                    delete_button.setAttribute("onclick", `delete_employee(${item.id})`)
+                    delete_button.innerText = "Borrar"
+                    const edit_button = document.createElement("a")
+                    edit_button.setAttribute("href", `empleados/editar?id=${item.id}`)
+                    edit_button.innerText = "Editar"
+                    elem.append(employee)
+                    elem.append(edit_button)
+                    elem.append(delete_button)
+                    container.append(elem)
+                }
+            }
+
+            fetch("http://localhost:5000/api/v1/employees")
                 .then((res) => res.json())
-                .then(parse_data)
-                .catch((error) => console.log("ERROR", error))
+                .then(handle_data)
+                .catch((error) => console.log("error:", error))
         </script>
     </body>
 </html>
