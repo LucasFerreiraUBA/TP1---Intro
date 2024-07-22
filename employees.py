@@ -33,7 +33,7 @@ def get_employees():
         if not query_limit:
             query_limit = QUERY_LIMIT
 
-        all_employees = Employee.query.limit(query_limit).all()
+        all_employees = Employee.query.order_by(Employee.last_name.asc()).limit(query_limit).all()
         employees_list = []
 
         for employee in all_employees:
@@ -58,7 +58,7 @@ def add_new_employee():
     check_out_time = request.json.get('check_out_time') 
 
     if not all([first_name, last_name, dni, check_in_time, check_out_time]):
-        return jsonify({'message': 'There is a missing paramester in the body'}), 400
+        return jsonify({'message': 'There is a missing parameter in the body'}), 400
 
     employee = db.session.query(Employee).filter(Employee.dni == dni).first()
 
@@ -70,14 +70,14 @@ def add_new_employee():
         last_name=last_name,
         dni=dni,
         check_in_time=check_in_time,
-        check_out_time=check_out_time
+        check_out_time=check_out_time,
     )
     db.session.add(new_employee)
     db.session.commit()
 
     employee = db.session.query(Employee).filter(Employee.dni == dni).first()
 
-    return jsonify({'success': f'Added employee with DNI:{dni} ', 'employee': employee.toDict()}), 200
+    return jsonify({'success': f'Added employee with DNI:{dni}', 'employee': employee.toDict()}), 200
 
 
 @employees.route('/api/v1/employees/<int:id>', methods=['DELETE'])
@@ -86,9 +86,9 @@ def delete_employee(id):
     try:
         employee = Employee.query.get(id)
 
-        if employee is None:
+        if not employee:
             return jsonify({'message': 'Employee not found'})
-
+        
         db.session.delete(employee)
         db.session.commit()
 
@@ -133,8 +133,8 @@ def get_employee_unpunctual_registers(id):
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
         
-        entering_tolerancy = int(request.args.get('entering_tolerancy', 0)) # curl -X GET "http://127.0.0.1:5000/api/v1/employees/1/registers?entering_tolerancy=5&leaving_tolerancy=6"
-        leaving_tolerancy = int(request.args.get('leaving_tolerancy', 0)) # Da cero si no esta escrito el param en la url
+        entering_tolerancy = int(request.args.get('entering_tolerancy', 0)) 
+        leaving_tolerancy = int(request.args.get('leaving_tolerancy', 0)) 
         
         entering_tolerancy_seconds = entering_tolerancy * 60
         leaving_tolerancy_seconds = leaving_tolerancy * 60
@@ -143,19 +143,18 @@ def get_employee_unpunctual_registers(id):
             or_(
             and_(Register.is_check_in == True, Register.deviation_seconds > entering_tolerancy_seconds),
             and_(Register.is_check_in == False, Register.deviation_seconds < leaving_tolerancy_seconds)
-            )
-            ).all()
+            ), 
+            Register.employee_id == id,
+            ).order_by(Register.check_timestamp.desc()).all()
 
         registers_data = []
       
         for register in register_list:
-            register_data = register.toDict()
-            registers_data.append(register_data)
+            registers_data.append(register.toDict())
 
-        return jsonify(registers_data),201
-    except Exception as error:
-        print(error)
-        return jsonify({'error':'An unexpected error had occurred'}),400
+        return jsonify(registers_data), 201
+    except:
+        return jsonify({'error':'An unexpected error had occurred'}), 400
 
 @employees.route('/api/v1/employees/<int:id>/registers/', methods=['GET'])
 def get_employee_registers(id):
@@ -166,23 +165,22 @@ def get_employee_registers(id):
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
         
-        
-        register_list = db.session.query(Register).filter(Register.employee_id == employee.id).all()
+        register_list = db.session.query(Register) \
+            .filter(Register.employee_id == id)    \
+            .order_by(Register.check_timestamp.desc()).all()
 
         registers_data = []
         for register in register_list:
-            register_data = register.toDict()
-            registers_data.append(register_data)
+            registers_data.append(register.toDict())
 
         return jsonify(registers_data),201
     
-    except Exception as error:
-        print(error)
-        return jsonify({'error':'An unexpected error had occurred'}),400
+    except:
+        return jsonify({'error':'An unexpected error had occurred'}), 400
 
     
-#Aux Function
 def replace_attr(current, new):
+    
     if new == None:
         return current
     return new
