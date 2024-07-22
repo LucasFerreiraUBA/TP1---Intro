@@ -11,14 +11,17 @@
         <label for="employees">Lista de Empleados:</label>
         <select id="employees" name="employees" required></select>
 
+        <label for="date_edited">Fecha</label>
+        <input type="date" id="date_edited" name="date_edited" required>
+
         <label for="timestamp">Hora de Llegada/Salida</label>
         <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
 
         <label for="is_check_in_true">Entrada</label>
-        <input type="radio" id="is_check_in_true" name="is_check_in" value="true" required>
+        <input type="radio" id="is_check_in_true" name="is_check_in" value="1" required>
 
         <label for="is_check_in_false">Salida</label>
-        <input type="radio" id="is_check_in_false" name="is_check_in" value="false" required>
+        <input type="radio" id="is_check_in_false" name="is_check_in" value="0" required>
 
         <button>Hecho</button>
     </form>
@@ -51,6 +54,7 @@
             option.setAttribute('selected', 'selected')
             document.getElementById("is_check_in_" + data.is_check_in).checked = true
             document.getElementById("timestamp").value = data.check_timestamp.split("T")[1]
+            document.getElementById("date_edited").value = data.check_timestamp.split("T")[0]
         }
 
         fetch(`http://localhost:5000/api/v1/registers/${id}`, {method:"GET"})
@@ -71,12 +75,10 @@
             const formData = new FormData(event.target)
             const employee_id = formData.get("employees")
             const timestamp = formData.get("timestamp")
+            const date_edited = formData.get("date_edited")
             const is_check_in = formData.get("is_check_in")
+            const check_timestamp = `${date_edited}T${timestamp}`
             
-            const date = new Date()
-            const date_str = date.toISOString().split('T')[0]
-            const check_timestamp = `${date_str}T${timestamp}`
-
             fetch(`http://localhost:5000/api/v1/registers/${id}`,
             {
                 method:"PUT",
@@ -84,8 +86,7 @@
                 body: JSON.stringify({
                     employee_id: employee_id,
                     check_timestamp: check_timestamp,
-                    is_check_in: is_check_in
-                })
+                    is_check_in: is_check_in })
             })
             .then((res) => res.json())
             .then(handle_response)

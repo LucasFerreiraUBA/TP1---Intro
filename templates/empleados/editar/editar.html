@@ -47,7 +47,7 @@
             .catch((error) => console.log("error:", error))
 
         function handle_response(data) {
-            if (data.sucess) {
+            if (data.success) {
                 alert("Empleado Modificado")
                 window.location.href = `/empleados/${data.id}`
             } else {
