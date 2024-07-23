@@ -22,38 +22,47 @@ def indice():
 
 @app.route('/fichar', methods=['GET'])
 def front_fichar_empleado():
-    return render_template('fichar/fichar.html')
-
-
-@app.route('/empleados/agregar', methods=['GET'])
-def front_create_employee():
-    return render_template('empleados/agregar/agregar.html')
-
-
-@app.route('/empleados/editar', methods=['GET'])
-def front_edit_employee():
-    return render_template('empleados/editar/editar.html')
+    return render_template('sign_up/sign_up.html')
 
 
 @app.route('/empleados', methods=['GET'])
 def empleados():
-    return render_template('empleados/empleados.html')
+    return render_template('employees/employees.html')
+
+
+@app.route('/empleados/agregar', methods=['GET'])
+def front_create_employee():
+    return render_template('employees/add_employee/add_employee.html')
+
+
+@app.route('/empleados/editar', methods=['GET'])
+def front_edit_employee():
+    return render_template('employees/edit_employee/edit_employee.html')
 
 
 @app.route('/empleados/<int:id>', methods=['GET'])
 def empleado(id):
-    return render_template('empleados/empleado.html')
-
-
-@app.route('/registros/agregar', methods=['GET'])
-def front_agregar_registro():
-    return render_template('registros/nuevo_registro.html')
+    return render_template('employees/employee.html')
 
 
 @app.route('/registros', methods=['GET'])
 def front_registros():
-    return render_template('registros/nuevo_registro.html')
+    return render_template('registers/registers.html')
 
+
+@app.route('/registros/agregar', methods=['GET'])
+def front_agregar_registro():
+    return render_template('registers/add_register/add_register.html')
+
+
+@app.route('/registros/editar', methods=['GET'])
+def front_editar_registro():
+    return render_template('registers/edit_register/edit_register.html')
+
+
+@app.errorhandler(404)
+def front_error(e):
+    return render_template('page_not_found/page_not_found.html')
 
 db.init_app(app)
 

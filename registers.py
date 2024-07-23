@@ -14,7 +14,7 @@ def get_registers():
     try:
         query_limit = request.args.get('limit')
         
-        if query_limit is None:
+        if not query_limit:
             query_limit = QUERY_LIMIT
         
         registers_list = db.session.query(Register).limit(query_limit)
@@ -33,7 +33,7 @@ def get_registers():
             registers_data.append(register_data)
         return jsonify(registers_data), 200
     except:
-        return jsonify({"message": "An unexpected error has occurred"}), 400
+        return jsonify({'message': 'An unexpected error has occurred'}), 400
 
 
 @registers.route('/api/v1/registers/<int:id>', methods=['GET'])
@@ -43,7 +43,7 @@ def get_register(id):
         register = Register.query.get(id)
         employee = db.session.query(Employee).get(register.employee_id)
 
-        if employee is None:
+        if not employee:
             return jsonify({'message': 'Employee not found'})
 
         register_data = {
@@ -54,7 +54,7 @@ def get_register(id):
         }
         return jsonify(register_data), 200
     except:
-        return jsonify({"message": "Register not found"}), 400
+        return jsonify({'message': 'Register not found'}), 400
 
 
 @registers.route('/api/v1/registers', methods=['POST'])
@@ -64,13 +64,13 @@ def add_new_register():
     #   Si el registro es proximo al horario de entrada: Cuando no es posterior al vigente.
     #   Si el registro es  proximo al horario de salida: Cuando es posterior al vigente.
     try:
-        timestamp = request.json.get("timestamp")
-        employee_id = int(request.json.get("employee_id"))
+        timestamp = request.json.get('timestamp')
+        employee_id = int(request.json.get('employee_id'))
 
         employee = db.session.query(Employee).get(employee_id)
 
         if employee is None:
-            return jsonify({'message': "Employee not found"}), 404
+            return jsonify({'message': 'Employee not found'}), 404
 
         check_datetime = datetime.fromisoformat(timestamp)
         (is_check_in, deviation_seconds) = get_register_type(check_datetime, employee)
@@ -84,8 +84,11 @@ def add_new_register():
 
         if register is None:
             new_register = Register(
-                check_timestamp=check_datetime, employee_id=employee_id, is_check_in=is_check_in,
-                deviation_seconds=deviation_seconds)
+                check_timestamp=check_datetime,
+                employee_id=employee_id, 
+                is_check_in=is_check_in,
+                deviation_seconds=deviation_seconds,
+            )
             db.session.add(new_register)
         else:
             register.check_timestamp = check_datetime,
@@ -93,14 +96,14 @@ def add_new_register():
 
         db.session.commit()
 
-        if register is None:
-            return jsonify({"success": "New register added successfully"}), 201
-        else:
-            return jsonify({"success": "The register was updated successfully"}), 201
+        if not register:
+            return jsonify({'success': 'New register added successfully'}), 201
+        
+        return jsonify({'success': 'The register was updated successfully'}), 201
 
     except Exception as error:
         print(error)
-        return jsonify({'message': "An unexpecter error has occurred"}), 400
+        return jsonify({'message': 'An unexpecter error has occurred'}), 400
 
 
 @registers.route('/api/v1/registers/<int:id>', methods=['DELETE'])
@@ -111,9 +114,9 @@ def delete_register(id):
         db.session.delete(register)
         db.session.commit()
 
-        return jsonify({"success": "Register deleted successfully"}, 201)
+        return jsonify({'success': 'Register deleted successfully'}), 201
     except:
-        return jsonify({"message": "An unexpecter error has occurred"}, 400)
+        return jsonify({'message': 'An unexpecter error has occurred'}), 400
 
 
 @registers.route('/api/v1/registers/<int:id>', methods=['PUT'])
@@ -122,22 +125,28 @@ def update_register(id):
     try:
         register = Register.query.get(id)
 
-        if register is None:
+        if not register:
             return jsonify({'message': 'Register does not exist'}), 404
 
-        check_time = request.json.get("check_timestamp")
-        employee_id = request.json.get("employee_id")
-        is_check_in = request.json.get("is_check_in")
+        check_time = datetime.fromisoformat(request.json.get('check_timestamp'))
+        employee_id = int(request.json.get('employee_id'))
+        is_check_in = bool(int(request.json.get('is_check_in')))
 
-        register.check_time = replace_attr(register.check_time, check_time)
+        register.check_timestamp = replace_attr(register.check_timestamp, check_time)
         register.employee_id = replace_attr(register.employee_id, employee_id)
         register.is_check_in = replace_attr(register.is_check_in, is_check_in)
+        
+        employee = Employee.query.get(employee_id)
 
+        if not employee:
+            return jsonify({'message': 'Employee does not exist'}), 404
+
+        register.deviation_seconds = deviation(employee, register.check_timestamp, register.is_check_in)
         db.session.commit()
 
-        return jsonify({"success": 'Register updated successfully'}), 201
+        return jsonify({'success': 'Register updated successfully'}), 201
     except:
-        return jsonify({"message": "Some error has occurred"}), 400
+        return jsonify({'message': 'Some error has occurred'}), 400
 
 
 def get_register_type(check_timestamp: datetime, employee: Employee):
@@ -146,10 +155,10 @@ def get_register_type(check_timestamp: datetime, employee: Employee):
     right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
     right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
 
-    delta_check_in = abs(check_timestamp.timestamp() - right_check_in_datetime.timestamp())
-    delta_check_out = abs(check_timestamp.timestamp() - right_check_out_datetime.timestamp())
+    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
+    delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
 
-    is_check_in = delta_check_in < delta_check_out
+    is_check_in = abs(delta_check_in) < abs(delta_check_out)
 
     deviation_seconds = delta_check_in if is_check_in else delta_check_out
     return is_check_in, deviation_seconds
@@ -158,3 +167,13 @@ def replace_attr(current, new):
     if new == None:
         return current
     return new
+
+def deviation(employee: Employee, check_timestamp: datetime, is_check_in: bool):
+
+    right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
+    right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
+
+    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
+    delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
+
+    return delta_check_in if is_check_in else delta_check_out
