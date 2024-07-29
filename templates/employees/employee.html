@@ -1,140 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/main.css')}}"
+    />
     <title id="employee_name"></title>
-</head>
-<header></header>
-<body>
-    <h1>Datos Empleado</h1>
+  </head>
+  <header></header>
+  <body>
+    <nav>
+      <h5>Datos Empleado</h5>
+
+        <p>Tolerancia (min):</p>
+        <label for="entering_tolerancy"
+          >Entrada:
+          <input
+            type="number"
+            id="entering_tolerancy"
+            name="entering_tolerancy"
+            value="0"
+        /></label>
+
+        <label for="leaving_tolerancy"
+          >Salida:
+          <input
+            type="number"
+            id="leaving_tolerancy"
+            name="leaving_tolerancy"
+            value="0"
+          />
+        </label>
+        <button class="basic-button" onclick="search_unpunctuals()">
+          Buscar
+        </button>
+
+    </nav>
+
+    <form>
+      <p id="name"></p>
+      <p id="dni"></p>
+      <label for="check_in_time">Entrada:</label>
+      <input type="time" id="check_in_time" name="check_in_time" disabled />
+      <label for="check_out_time">Salida:</label>
+      <input type="time" id="check_out_time" name="check_out_time" disabled />
+    </form>
+
     <div>
-        <p id="name"></p>
-        <p id="dni"></p>
-        <label for="check_in_time">Entrada:</label>
-        <input type="time" id="check_in_time" name="check_in_time" disabled>
-        <label for="check_out_time">Salida:</label>
-        <input type="time" id="check_out_time" name="check_out_time" disabled>
+      <h3>Registros impuntuales</h3>
+
+      <ol id="unpunctual_list"></ol>
     </div>
+
     <div>
-        <h3>Registros</h3>
-        <ol id="registers_list"></ol>
+      <h3>Registros</h3>
+      <ol id="registers_list"></ol>
     </div>
-    <div>
-        <h3>Registros inpuntuales</h3>
-        <div>
-            <p>Minutos de tolerancia:</p>
-            <label for="entering_tolerancy">Entrada:</label>
-            <input type="number" id="entering_tolerancy" name="entering_tolerancy">
-            <label for="leaving_tolerancy">Salida:</label>
-            <input type="number" id="leaving_tolerancy" name="leaving_tolerancy">
-            <button class="basic-button" onclick="search_unpunctuals()">Buscar</button>
-        </div>
-        <ol id="unpunctual_list"></ol>
-    </div>
+
     <script>
-        const url = window.location.pathname.split('/')
-        const id = url[url.length - 1]
-        
-        function replace_predet(input, predet) {
-            var input_value = input.value
-            return input_value === "" ? predet : input_value;
+      const url = window.location.pathname.split("/");
+      const id = url[url.length - 1];
+
+      function replace_predet(input, predet) {
+        var input_value = input.value;
+        return input_value === "" ? predet : input_value;
+      }
+
+      function search_unpunctuals() {
+        const num = document.getElementById("unpunctual_list").value;
+        document.getElementById("unpunctual_list").innerHTML = "";
+        const input_in = document.getElementById("entering_tolerancy");
+        const input_out = document.getElementById("leaving_tolerancy");
+
+        const v1 = replace_predet(input_in, 0);
+        const v2 = replace_predet(input_out, 0);
+
+        fetch(
+          `http://localhost:5000/api/v1/employees/${id}/registers/unpunctual?entering_tolerancy=${v1}&leaving_tolerancy=${v2}`
+        )
+          .then((res) => res.json())
+          .then(handle_unpunctual_data)
+          .catch((error) => console.log("error:", error));
+      }
+
+      function handle_get_response(data) {
+        document.getElementById(
+          "employee_name"
+        ).innerText = `${data.last_name}, ${data.first_name}`;
+        document.getElementById(
+          "name"
+        ).innerText = `Nombre: ${data.last_name}, ${data.first_name}`;
+        document.getElementById("dni").innerText = `DNI: ${data.dni}`;
+        document.getElementById("check_in_time").value =
+          data.check_in_time.slice(0, 5);
+        document.getElementById("check_out_time").value =
+          data.check_out_time.slice(0, 5);
+      }
+
+      fetch(`http://localhost:5000/api/v1/employees/${id}`, { method: "GET" })
+        .then((res) => res.json())
+        .then(handle_get_response)
+        .catch((error) => console.log("error:", error));
+
+      function print_is_input(is_check_in) {
+        if (is_check_in) {
+          return "Entrada";
         }
+        return "Salida";
+      }
 
-        function search_unpunctuals() {
-                const num = document.getElementById("unpunctual_list").value
-                document.getElementById("unpunctual_list").innerHTML = ""
-                const input_in = document.getElementById("entering_tolerancy")
-                const input_out = document.getElementById("leaving_tolerancy")
-                
-                const v1 = replace_predet(input_in, 0)
-                const v2 = replace_predet(input_out, 0)
+      function handle_data(data) {
+        const container = document.getElementById("registers_list");
+        for (const register of data) {
+          const card = document.createElement("li");
+          const register_date = document.createElement("input");
+          const register_time = document.createElement("input");
+          const register_is_check_in = document.createElement("p");
 
-                fetch(`http://localhost:5000/api/v1/employees/${id}/registers/unpunctual?entering_tolerancy=${v1}&leaving_tolerancy=${v2}`)
-                .then((res) => res.json())
-                .then(handle_unpunctual_data)
-                .catch((error) => console.log("error:", error))
-            }
+          card.setAttribute("id", `${register.id}`);
+          card.setAttribute("class", "register-card")
+          register_date.setAttribute("type", "date");
+          register_date.setAttribute("disabled", "disabled");
+          register_time.setAttribute("type", "time");
+          register_time.setAttribute("disabled", "disabled");
+          register_date.value = register.check_timestamp.split("T")[0];
+          register_time.value = register.check_timestamp
+            .split("T")[1]
+            .slice(0, 5);
+          register_is_check_in.innerText = print_is_input(register.is_check_in);
 
-        function handle_get_response(data) {
-            document.getElementById("employee_name").innerText = `${data.last_name}, ${data.first_name}`
-            document.getElementById("name").innerText = `Nombre: ${data.last_name}, ${data.first_name}`
-            document.getElementById("dni").innerText = `DNI: ${data.dni}`
-            document.getElementById("check_in_time").value = data.check_in_time.slice(0,5)
-            document.getElementById("check_out_time").value = data.check_out_time.slice(0,5)
+          let pill_class;
+          register.is_check_in
+            ? (pill_class = "check_in")
+            : (pill_class = "check_out");
+          register_is_check_in.setAttribute("class", `${pill_class}`);
+          
+          let deviation = Math.trunc(register.deviation_seconds / 60);
+          const deviation_mark = document.createElement("p");
+          deviation_mark.innerText = `${deviation} min`;
+
+          card.append(register_date);
+          card.append(register_time);
+          card.append(register_is_check_in);
+          card.append(deviation_mark)
+          container.append(card);
         }
+      }
 
-        fetch(`http://localhost:5000/api/v1/employees/${id}`, {method:"GET"})
-            .then((res) => res.json())
-            .then(handle_get_response)
-            .catch((error) => console.log("error:", error))
+      function handle_unpunctual_data(data) {
+        const container = document.getElementById("unpunctual_list");
+        for (const register of data) {
+          const card = document.createElement("li");
+          const register_date = document.createElement("input");
+          const register_time = document.createElement("input");
+          const register_is_check_in = document.createElement("p");
 
-        function print_is_input(is_check_in) {
-            if (is_check_in) {
-                return "Entrada"
-            } 
-            return "Salida"
+          card.setAttribute("id", `${register.id}`);
+          card.setAttribute("class", "register-card")
+          register_date.setAttribute("type", "date");
+          register_date.setAttribute("disabled", "disabled");
+          register_time.setAttribute("type", "time");
+          register_time.setAttribute("disabled", "disabled");
+          register_date.value = register.check_timestamp.split("T")[0];
+          register_time.value = register.check_timestamp
+            .split("T")[1]
+            .slice(0, 5);
+          register_is_check_in.innerText = print_is_input(register.is_check_in);
+
+          let pill_class;
+          register.is_check_in
+            ? (pill_class = "check_in")
+            : (pill_class = "check_out");
+          register_is_check_in.setAttribute("class", `${pill_class}`);
+
+          let deviation = Math.trunc(register.deviation_seconds / 60);
+          const deviation_mark = document.createElement("p");
+          deviation_mark.innerText = `${deviation} min`;
+
+          card.append(register_date);
+          card.append(register_time);
+          card.append(register_is_check_in);
+          card.append(deviation_mark);
+          container.append(card);
         }
+      }
 
-        function handle_data(data) {
-            const container = document.getElementById("registers_list")
-            for (const register of data) {
-                const card = document.createElement("li")
-                const register_date = document.createElement("input")
-                const register_time = document.createElement("input")
-                const register_is_check_in = document.createElement("p")
-                
-                card.setAttribute("id", `${register.id}`)
-                register_date.setAttribute("type", "date")
-                register_date.setAttribute("disabled", "disabled")
-                register_time.setAttribute("type", "time")
-                register_time.setAttribute("disabled", "disabled")
-                register_date.value = register.check_timestamp.split("T")[0]
-                register_time.value = register.check_timestamp.split("T")[1].slice(0,5)
-                register_is_check_in.innerText = print_is_input(register.is_check_in)
-
-                card.append(register_date)
-                card.append(register_time)
-                card.append(register_is_check_in)
-                container.append(card)
-            }
-        }
-
-        function handle_unpunctual_data(data) {
-            const container = document.getElementById("unpunctual_list")
-            for (const register of data) {
-                const card = document.createElement("li")
-                const register_date = document.createElement("input")
-                const register_time = document.createElement("input")
-                const register_is_check_in = document.createElement("p")
-                
-                card.setAttribute("id", `${register.id}`)
-                register_date.setAttribute("type", "date")
-                register_date.setAttribute("disabled", "disabled")
-                register_time.setAttribute("type", "time")
-                register_time.setAttribute("disabled", "disabled")
-                register_date.value = register.check_timestamp.split("T")[0]
-                register_time.value = register.check_timestamp.split("T")[1].slice(0,5)
-                register_is_check_in.innerText = print_is_input(register.is_check_in)
-
-                card.append(register_date)
-                card.append(register_time)
-                card.append(register_is_check_in)
-                container.append(card)
-            }
-        }
-
-        fetch(`http://localhost:5000/api/v1/employees/${id}/registers/`)
+      fetch(`http://localhost:5000/api/v1/employees/${id}/registers/`)
         .then((res) => res.json())
         .then(handle_data)
-        .catch((error) => console.log("error:", error))
+        .catch((error) => console.log("error:", error));
 
-        fetch(`http://localhost:5000/api/v1/employees/${id}/registers/unpunctual/`)
+      fetch(
+        `http://localhost:5000/api/v1/employees/${id}/registers/unpunctual/`
+      )
         .then((res) => res.json())
         .then(handle_unpunctual_data)
-        .catch((error) => console.log("error:", error))
+        .catch((error) => console.log("error:", error));
     </script>
-</body>
-<footer></footer>
+  </body>
+  <footer></footer>
 </html>
