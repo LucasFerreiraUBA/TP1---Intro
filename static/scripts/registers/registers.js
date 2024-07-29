@@ -1,6 +1,6 @@
 function search_registers() {
     const num = document.getElementById("num_registers").value;
-    document.getElementgitById("registers_list").innerHTML = "";
+    document.getElementById("registers_list").innerHTML = "";
     fetch(`http://localhost:5000/api/v1/registers?limit=${num}`)
     .then((res) => res.json())
     .then(handle_data)
