@@ -36,28 +36,34 @@
             <button class="basic-button" onclick="search_unpunctuals()">
                 Buscar
             </button>
-
+            <a class="basic-button back-button" href="/employees">Volver</a>
         </nav>
 
         <form>
             <p id="name"></p>
             <p id="dni"></p>
-            <label for="check_in_time">Entrada:</label>
-            <input type="time" id="check_in_time" name="check_in_time" disabled />
-            <label for="check_out_time">Salida:</label>
-            <input type="time" id="check_out_time" name="check_out_time" disabled />
+            <label for="check_in_time">Entrada:
+                <input type="time" id="check_in_time" name="check_in_time" disabled />
+            </label>
+            
+            <label for="check_out_time">Salida:
+                <input type="time" id="check_out_time" name="check_out_time" disabled />
+            </label>
+            
         </form>
 
-        <div>
-            <h3>Registros impuntuales</h3>
+        <div id="registers_panel">
+            <div>
+                <h3>Registros impuntuales</h3>
+                <ol id="unpunctual_list"></ol>
+            </div>
 
-            <ol id="unpunctual_list"></ol>
+            <div>
+                <h3>Registros</h3>
+                <ol id="registers_list"></ol>
+            </div>
         </div>
-
-        <div>
-            <h3>Registros</h3>
-            <ol id="registers_list"></ol>
-        </div>
+        
 
         <script src="{{ url_for('static', filename='scripts/employees/employee.js')}}"></script>
     </body>
