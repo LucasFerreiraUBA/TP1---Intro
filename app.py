@@ -14,7 +14,7 @@ PORT = 5000
 app.register_blueprint(registers)
 app.register_blueprint(employees)
 
-# Front routes
+# Front 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
