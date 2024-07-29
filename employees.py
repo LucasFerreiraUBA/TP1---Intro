@@ -94,6 +94,8 @@ def delete_employee(id):
             return jsonify({'message': 'Employee not found'})
         
         db.session.delete(employee)
+
+        db.session.query(Register).filter(Register.employee_id == employee.id).delete()
         db.session.commit()
 
         return jsonify({'success': 'Deleted successfully', 'employee': employee.toDict()}), 201
@@ -112,21 +114,23 @@ def update_employee(id):
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
 
+   
         first_name = request.json.get('first_name')
         last_name = request.json.get('last_name')
         dni = request.json.get('dni')
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
 
-        employee.first_name = aux.replace_attr(employee.first_name, first_name)
-        employee.last_name = aux.replace_attr(employee.last_name, last_name)
+        employee.first_name = str(aux.replace_attr(employee.first_name, first_name))
+        employee.last_name = str(aux.replace_attr(employee.last_name, last_name))
         employee.dni = aux.replace_attr(employee.dni, dni)
         employee.check_in_time = aux.replace_attr(employee.check_in_time, check_in_time)
         employee.check_out_time = aux.replace_attr(employee.check_out_time, check_out_time)
 
         db.session.commit()
-        return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
-    except:
+        return jsonify({'success': 'Employee successfully updated', 'id': employee.id}), 201
+    except Exception as error:
+        print(error)
         return jsonify({'error': 'An unexpected error has occurred'}), 400
 
 

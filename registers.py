@@ -24,7 +24,8 @@ def get_registers():
         registers_data = []
         for register in registers_list:
             employee = db.session.query(Employee).get(register.employee_id)
-
+            if employee is None:
+                continue
             register_data = {
                 'id': register.id,
                 'timestamp': register.check_timestamp.isoformat(),
@@ -34,7 +35,8 @@ def get_registers():
             }
             registers_data.append(register_data)
         return jsonify(registers_data), 200
-    except:
+    except Exception as error:
+        print(error) 
         return jsonify({'message': 'An unexpected error has occurred'}), 400
 
 

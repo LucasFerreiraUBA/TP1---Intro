@@ -15,9 +15,10 @@ def replace_attr(current, new):
     '''
     Devuelve el valor nuevo solo si no esta vacio.
     '''
-    if new == None:
+    if not new is None:
+        return new
+    else:
         return current
-    return new
 
 def deviation(employee: Employee, check_timestamp: datetime, is_check_in: bool):
     '''
