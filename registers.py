@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from models import Register, Employee, db
 from datetime import datetime, timedelta
+import auxiliaries as aux
 
 registers = Blueprint('registers', __name__)
 
@@ -10,7 +11,9 @@ QUERY_LIMIT = 100
 
 @registers.route('/api/v1/registers', methods=['GET'])
 def get_registers():
-    #Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
+    '''
+    Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
+    '''
     try:
         query_limit = request.args.get('limit')
         
@@ -38,7 +41,9 @@ def get_registers():
 
 @registers.route('/api/v1/registers/<int:id>', methods=['GET'])
 def get_register(id):
-    #Obtiene los detalles de un registro dado si @id 
+    '''
+    Obtiene los detalles de un registro dado su @id 
+    '''
     try:
         register = Register.query.get(id)
         employee = db.session.query(Employee).get(register.employee_id)
@@ -59,10 +64,12 @@ def get_register(id):
 
 @registers.route('/api/v1/registers', methods=['POST'])
 def add_new_register():
-    #Agrega un nuevo registro con los datos que hay en el body.
-    #Si el registro ya existe, lo actualiza siempre y cuando:
-    #   Si el registro es proximo al horario de entrada: Cuando no es posterior al vigente.
-    #   Si el registro es  proximo al horario de salida: Cuando es posterior al vigente.
+    '''
+    Agrega un nuevo registro con los datos que hay en el body.
+    Si el registro ya existe, lo actualiza siempre y cuando:
+    Si el registro es proximo al horario de entrada: Cuando no es posterior al vigente.
+    Si el registro es  proximo al horario de salida: Cuando es posterior al vigente.
+    '''
     try:
         timestamp = request.json.get('timestamp')
         employee_id = int(request.json.get('employee_id'))
@@ -73,7 +80,7 @@ def add_new_register():
             return jsonify({'message': 'Employee not found'}), 404
 
         check_datetime = datetime.fromisoformat(timestamp)
-        (is_check_in, deviation_seconds) = get_register_type(check_datetime, employee)
+        (is_check_in, deviation_seconds) = aux.get_register_type(check_datetime, employee)
 
         register = db.session.query(Register).filter(
             Register.check_timestamp >= check_datetime.date(),
@@ -108,7 +115,9 @@ def add_new_register():
 
 @registers.route('/api/v1/registers/<int:id>', methods=['DELETE'])
 def delete_register(id):
-    #Elimina un registro dado un @id
+    '''
+    Elimina un registro dado un @id
+    '''
     try:
         register = db.session.query(Register).get(id)
         db.session.delete(register)
@@ -121,7 +130,9 @@ def delete_register(id):
 
 @registers.route('/api/v1/registers/<int:id>', methods=['PUT'])
 def update_register(id):
-    #Actualiza los datos de un registro dado su @id con los datos del body.
+    '''
+    Actualiza los datos de un registro dado su @id con los datos del body.
+    '''
     try:
         register = Register.query.get(id)
 
@@ -132,48 +143,18 @@ def update_register(id):
         employee_id = int(request.json.get('employee_id'))
         is_check_in = bool(int(request.json.get('is_check_in')))
 
-        register.check_timestamp = replace_attr(register.check_timestamp, check_time)
-        register.employee_id = replace_attr(register.employee_id, employee_id)
-        register.is_check_in = replace_attr(register.is_check_in, is_check_in)
+        register.check_timestamp = aux.replace_attr(register.check_timestamp, check_time)
+        register.employee_id = aux.replace_attr(register.employee_id, employee_id)
+        register.is_check_in = aux.replace_attr(register.is_check_in, is_check_in)
         
         employee = Employee.query.get(employee_id)
 
         if not employee:
             return jsonify({'message': 'Employee does not exist'}), 404
 
-        register.deviation_seconds = deviation(employee, register.check_timestamp, register.is_check_in)
+        register.deviation_seconds = aux.deviation(employee, register.check_timestamp, register.is_check_in)
         db.session.commit()
 
         return jsonify({'success': 'Register updated successfully'}), 201
     except:
         return jsonify({'message': 'Some error has occurred'}), 400
-
-
-def get_register_type(check_timestamp: datetime, employee: Employee):
-    # Dado una hora de fichaje, y un employee devuelve si es una entrada y la diferencia en segundos
-
-    right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
-    right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
-
-    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
-    delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
-
-    is_check_in = abs(delta_check_in) < abs(delta_check_out)
-
-    deviation_seconds = delta_check_in if is_check_in else delta_check_out
-    return is_check_in, deviation_seconds
-
-def replace_attr(current, new):
-    if new == None:
-        return current
-    return new
-
-def deviation(employee: Employee, check_timestamp: datetime, is_check_in: bool):
-
-    right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
-    right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
-
-    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
-    delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
-
-    return delta_check_in if is_check_in else delta_check_out
