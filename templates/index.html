@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/main.css">
-    <title>Menu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+    <title>Menu principal</title>
 </head>
 
 <body>
+    <header>
+        <h1>Registro y control de empleados</h1>
+        <p>UBA 2024 Introducción al desarrollo de software</p>
+    </header>
     <main>
-        <div class="opciones">
-            <a href="/employees/" class="boton"><h2>Fichar</h2></a>
-            <span class="boton"><h2>Empleados</h2></span>
-            <span class="boton"><h2>Registros</h2></span>
+        <div class="options">
+            <a href="/check" class="main-button"><h2>Fichar</h2></a>
+            <a href="/employees" class="main-button"><h2>Empleados</h2></a>
+            <a href="/registers" class="main-button"><h2>Registros</h2></a>
         </div>
     </main>
-
 <footer>
     <p>Soy un footer</p>
 </footer>

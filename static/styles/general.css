@@ -1,0 +1,27 @@
+/* Regla Universal */ 
+
+@import url(colors.css);
+
+
+*{
+    box-sizing: border-box;
+    font-family: 'Raleway', 'calibri' , sans-serif;
+    color: var(--color-dark);
+}
+
+/* Estilos  */
+a{
+    text-decoration: none;
+}
+
+li{
+    list-style: none;
+}
+
+body{
+    background-color: var(--bg);
+}
+
+header{
+    color: var(--text-bg);
+}
