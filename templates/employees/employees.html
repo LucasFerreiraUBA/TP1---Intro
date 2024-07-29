@@ -9,10 +9,12 @@
     <body>
         <nav>
             <a class="back-button basic-button" href="/">Volver</a>
-            <a class="add-button basic-button" href="empleados/agregar">Agregar</a>
+            <a class="add-button basic-button" href="employees/add">Agregar</a>
             <div>
-                <label for="num_employeers">Cantidad de empleados: 0 -</label>
-                <input type="number" id="num_employeers" name="num_employeers" placeholder="100">
+                <label for="num_employeers">Cantidad de empleados: 0 - 
+                    <input type="number" id="num_employeers" name="num_employeers" value="100">
+                </label>
+                
                 <button class="basic-button" onclick="search_employees()">Hecho</button>
             </div>
         </nav>
@@ -53,6 +55,10 @@
                 window.location.href = `employees/edit?id=${id}`
             }
 
+            function get_employee(id) {
+                window.location.href = `employees/${id}`
+            }
+
             function handle_data(data) {
                 const container = document.getElementById("employees_list")
                 for (const employee of data) {
@@ -61,20 +67,25 @@
                     const employee_name = document.createElement("p")
                     const delete_button = document.createElement("button")
                     const edit_button = document.createElement("button")
+                    const more_button = document.createElement("button")
 
                     row.setAttribute("id", `${employee.id}`)
                     row.setAttribute("class","employee-card")
                     delete_button.setAttribute("onclick", `delete_employee(${employee.id})`) 
                     edit_button.setAttribute("onclick", `edit_employee(${employee.id})`)
+                    more_button.setAttribute("onclick", `get_employee(${employee.id})`)
 
                     delete_button.setAttribute("class", "basic-button") 
                     edit_button.setAttribute("class", "basic-button") 
+                    more_button.setAttribute("class", "basic-button")
 
                     employee_name.innerText = `${employee.last_name}, ${employee.first_name}`
                     edit_button.innerText = "Editar"
                     delete_button.innerText = "Borrar"
+                    more_button.innerText = "Ver mas"
                     
                     row.append(employee_name)
+                    row.append(more_button)
                     row.append(edit_button)
                     row.append(delete_button)
                     container.append(row)
