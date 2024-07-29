@@ -25,7 +25,7 @@ def front_fichar_empleado():
     return render_template('sign_up/sign_up.html')
 
 
-@app.route('/empleados', methods=['GET'])
+@app.route('/employees', methods=['GET'])
 def empleados():
     return render_template('employees/employees.html')
 
