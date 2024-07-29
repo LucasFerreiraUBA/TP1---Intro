@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from models import Register, Employee, db
 from datetime import datetime, timedelta
+import auxilaires as aux
 
 registers = Blueprint('registers', __name__)
 
@@ -79,7 +80,7 @@ def add_new_register():
             return jsonify({'message': 'Employee not found'}), 404
 
         check_datetime = datetime.fromisoformat(timestamp)
-        (is_check_in, deviation_seconds) = get_register_type(check_datetime, employee)
+        (is_check_in, deviation_seconds) = aux.get_register_type(check_datetime, employee)
 
         register = db.session.query(Register).filter(
             Register.check_timestamp >= check_datetime.date(),
@@ -142,57 +143,18 @@ def update_register(id):
         employee_id = int(request.json.get('employee_id'))
         is_check_in = bool(int(request.json.get('is_check_in')))
 
-        register.check_timestamp = replace_attr(register.check_timestamp, check_time)
-        register.employee_id = replace_attr(register.employee_id, employee_id)
-        register.is_check_in = replace_attr(register.is_check_in, is_check_in)
+        register.check_timestamp = aux.replace_attr(register.check_timestamp, check_time)
+        register.employee_id = aux.replace_attr(register.employee_id, employee_id)
+        register.is_check_in = aux.replace_attr(register.is_check_in, is_check_in)
         
         employee = Employee.query.get(employee_id)
 
         if not employee:
             return jsonify({'message': 'Employee does not exist'}), 404
 
-        register.deviation_seconds = deviation(employee, register.check_timestamp, register.is_check_in)
+        register.deviation_seconds = aux.deviation(employee, register.check_timestamp, register.is_check_in)
         db.session.commit()
 
         return jsonify({'success': 'Register updated successfully'}), 201
     except:
         return jsonify({'message': 'Some error has occurred'}), 400
-
-
-def get_register_type(check_timestamp: datetime, employee: Employee):
-    '''
-    Dado una hora de fichaje, y un employee devuelve si es una entrada y la diferencia en segundos
-    '''
-    delta_check_in, delta_check_out = difference_time(employee, check_timestamp)
-    is_check_in = abs(delta_check_in) < abs(delta_check_out)
-    deviation_seconds = delta_check_in if is_check_in else delta_check_out
-
-    return is_check_in, deviation_seconds
-
-def replace_attr(current, new):
-    '''
-    Devuelve el valor nuevo solo si no esta vacio.
-    '''
-    if new == None:
-        return current
-    return new
-
-def deviation(employee: Employee, check_timestamp: datetime, is_check_in: bool):
-    '''
-    Retorna la diferencia de tiempo entre el fichaje y el horario de entrada/salida.
-    '''
-    delta_check_in, delta_check_out = difference_time(employee, check_timestamp)
-
-    return delta_check_in if is_check_in else delta_check_out
-
-def difference_time(employee: Employee, check_timestamp: datetime):
-    '''
-    Calcula las diferencia de tiempo entre el fichaje y los horarios de entrada/salida
-    '''
-    right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
-    right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
-
-    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
-    delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
-
-    return delta_check_in, delta_check_out

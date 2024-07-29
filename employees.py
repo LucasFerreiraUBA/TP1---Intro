@@ -1,6 +1,7 @@
 from models import db, Employee, Register
 from flask import  jsonify, request, Blueprint
 from sqlalchemy import or_, and_
+import auxilaires as aux
 
 QUERY_LIMIT = 100
 
@@ -120,11 +121,11 @@ def update_employee(id):
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
 
-        employee.first_name = replace_attr(employee.first_name, first_name)
-        employee.last_name = replace_attr(employee.last_name, last_name)
-        employee.dni = replace_attr(employee.dni, dni)
-        employee.check_in_time = replace_attr(employee.check_in_time, check_in_time)
-        employee.check_out_time = replace_attr(employee.check_out_time, check_out_time)
+        employee.first_name = aux.replace_attr(employee.first_name, first_name)
+        employee.last_name = aux.replace_attr(employee.last_name, last_name)
+        employee.dni = aux.replace_attr(employee.dni, dni)
+        employee.check_in_time = aux.replace_attr(employee.check_in_time, check_in_time)
+        employee.check_out_time = aux.replace_attr(employee.check_out_time, check_out_time)
 
         db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
@@ -189,9 +190,3 @@ def get_employee_registers(id):
     
     except:
         return jsonify({'error':'An unexpected error had occurred'}), 400
-
-    
-def replace_attr(current, new):
-    if new == None:
-        return current
-    return new
