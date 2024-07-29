@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='styles/main.css')}}"
+        />
+        <title>Registros</title>
+    </head>
+    <body>
+    <nav>
+        <a class="back-button basic-button" href="/">Volver</a>
+        <a class="back-button basic-button" href="/registers/unpunctual"
+        >Impuntualidades</a
+        >
+        <a class="add-button basic-button" href="registers/add">Agregar</a>
+        <div>
+        <label for="num_registers"
+            >Cantidad de Registros: 0 -
+            <input
+            type="number"
+            id="num_registers"
+            name="num_registers"
+            value="100"
+        /></label>
+
+        <button class="basic-button" onclick="search_registers()">Hecho</button>
+        </div>
+    </nav>
+
+    <h1>Registros:</h1>
+    <ul id="registers_list"></ul>
+
+    <script src="{{ url_for('static', filename='scripts/registers/registers.js')}}"></script>
+    </body>
+</html>

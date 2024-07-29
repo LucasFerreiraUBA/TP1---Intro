@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+    <title>Agregar Registro</title>
+</head>
+<body>
+    <nav>
+        <h5>Nuevo Registro</h5>
+        <a class="basic-button back-button" href="/registers">Volver</a>
+    </nav>
+
+    <div class="center">
+
+   
+    <form onsubmit="create_register(event)">
+        <label for="employees">Lista de Empleados:</label>
+        <select id="employees" name="employees" required></select>
+
+        <label for="date_edited">Fecha</label>
+        <input type="date" id="date_edited" name="date_edited" required>
+
+        <label for="timestamp">Hora de Llegada/Salida</label>
+        <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
+
+        <button>Hecho</button>
+    </form>
+    </div>
+    <script src="{{ url_for('static', filename='scripts/registers/add_register.js')}}"></script>
+</body>
+</html>

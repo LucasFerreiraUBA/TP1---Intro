@@ -1,0 +1,23 @@
+:root{
+    --bg: rgb(227, 222, 222);
+    --regular: rgb(2, 83, 110);
+    --accent: rgb(181, 153, 128);
+    --secondary: rgb(250, 177, 23);
+
+    --out: rgb(255, 154, 52);
+    --in: rgb(255, 88, 37);
+
+    --dark: rgb(35, 35, 35);
+    --light: rgb(227,222,222);
+    --light-u: rgb(255, 255, 255);
+    --text-bg: var(--dark);
+
+    --radius: 0.2rem;
+
+    --top-offset: 30vh;
+
+    
+    --cols: 4;
+    --nav-direction: column;
+    box-sizing: border-box;
+}

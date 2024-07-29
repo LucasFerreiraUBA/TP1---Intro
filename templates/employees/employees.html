@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+        <title>Empleados</title>
+    </head>
+    <body>
+        <nav>
+            <a class="back-button basic-button" href="/">Volver</a>
+            <a class="add-button basic-button" href="employees/add">Agregar</a>
+            <div>
+                <label for="num_employeers">Cantidad de empleados: 0 - 
+                    <input type="number" id="num_employeers" name="num_employeers" value="100">
+                </label>
+                
+                <button class="basic-button" onclick="search_employees()">Hecho</button>
+            </div>
+        </nav>
+
+        <h1>Empleados:</h1>
+        <ul id="employees_list"></ul>
+
+        <script src="{{ url_for('static', filename='scripts/employees/employees.js')}}"></script>
+    </body>
+</html>

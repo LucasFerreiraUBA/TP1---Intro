@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+    <title>Editar Registro</title>
+</head>
+<body>
+    <nav>
+        <h5>Editar Registro</h5>
+        <a class="basic-button back-button" href="/registers">Volver</a>
+    </nav>
+    <div class="center">
+
+   
+    <form onsubmit="edit_register(event)">
+        <label for="employees">Lista de Empleados:</label>
+        <select id="employees" name="employees" required></select>
+
+        <label for="date_edited">Fecha</label>
+        <input type="date" id="date_edited" name="date_edited" required>
+
+        <label for="timestamp">Hora de Llegada/Salida</label>
+        <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
+
+        <label for="is_check_in_true">Entrada</label>
+        <input type="radio" id="is_check_in_true" name="is_check_in" value="1" required>
+
+        <label for="is_check_in_false">Salida</label>
+        <input type="radio" id="is_check_in_false" name="is_check_in" value="0" required>
+
+        <button class="basic-button">Hecho</button>
+    </form>
+</div>
+    <script src="{{ url_for('static', filename='scripts/registers/edit_register.js')}}"></script>
+</body>
+</html>

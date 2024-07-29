@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+        <title>Desviaciones</title>
+    </head>
+    <body>
+        <nav>
+            <a class="back-button basic-button" href="/registers">Volver</a>
+            <a class="add-button basic-button" href="registers/add">Agregar</a>
+            <div>
+                <label for="tolerancy-in">Tolerancia de entrada(min): 0 - </label>
+                <input type="number" id="tolerancy-in" name="tolerancy-in" placeholder="1" value="0" required>
+                <button class="basic-button" onclick="search_registers()">Hecho</button>
+            </div>
+            <div>
+                <label for="tolerancy-out">Tolerancia de salida(min): 0 - </label>
+                <input type="number" id="tolerancy-out" name="tolerancy-out" placeholder="1" value="0" required>
+                <button class="basic-button" onclick="search_registers()">Hecho</button>
+            </div>
+            <div>
+                <label for="num_registers">Cantidad de registros: 0 - </label>
+                <input type="number" id="num_registers" name="num_registers" value="100" required>
+                <button class="basic-button" onclick="search_registers()">Hecho</button>
+            </div>
+        </nav>
+   
+        <h1>Registros:</h1>
+        <ul id="registers_list"></ul>
+
+        <script src="{{ url_for('static', filename='scripts/registers/unpunctual.js')}}"></script>
+    </body>
+</html>
