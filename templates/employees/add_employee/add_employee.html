@@ -10,10 +10,16 @@
         <title>Crear Empleado</title>
     </head>
     <body>
-        <nav>
-            <a class="basic-button back-button" href="/employees">Volver</a>
-        <h5>Datos de Empleado</h5>
-        </nav>
+        <i id="toggle-nav">Datos de Empleado:</i>
+        <div  id="navbar">
+            <nav id="mobile-nav">
+                <a class="basic-button back-button" href="/employees">Volver</a>
+            </nav>
+            <nav  id="full-nav">
+                <a class="basic-button back-button" href="/employees">Volver</a>
+                <h5>Datos de Empleado</h5>
+            </nav>
+        </div>
 
         <div class="center">
             <form onsubmit="create_employee(event)">
@@ -67,6 +73,7 @@
                 <button>Hecho</button>
             </form>
         </div>
+        <script defer src="{{ url_for('static', filename='scripts/navbar.js')}}"></script>
         <script src="{{ url_for('static', filename='scripts/employees/add_employee.js')}}"></script>
     </body>
 </html>

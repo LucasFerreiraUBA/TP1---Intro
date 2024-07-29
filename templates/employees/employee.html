@@ -1,65 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link
-            rel="stylesheet"
-            href="{{ url_for('static', filename='styles/main.css')}}"
-        />
-        <title id="employee_name"></title>
-    </head>
-    <header></header>
-    <body>
-        <nav>
-            <h5>Datos Empleado</h5>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles/main.css')}}"
+    />
+    <title id="employee_name"></title>
+  </head>
+  <header></header>
+  <body>
+    <i id="toggle-nav">Datos empleado</i>
+    <div id="navbar">
+      <nav id="mobile-nav">
+        <a class="basic-button back-button" href="/employees">Volver</a>
+        <p>Tolerancia (min):</p>
+        <label for="entering_tolerancy"
+          >Entrada:
+          <input
+            type="number"
+            id="entering_tolerancy"
+            name="entering_tolerancy"
+            value="0"
+        /></label>
+        <label for="leaving_tolerancy"
+          >Salida:
+          <input
+            type="number"
+            id="leaving_tolerancy"
+            name="leaving_tolerancy"
+            value="0"
+          />
+        </label>
+        <button class="basic-button" onclick="search_unpunctuals()">
+          Buscar
+        </button>
+      </nav>
+      <nav id="full-nav">
+        <h5>Datos Empleado</h5>
 
-            <p>Tolerancia (min):</p>
-            <label for="entering_tolerancy"
-                >Entrada:
-                <input
-                type="number"
-                id="entering_tolerancy"
-                name="entering_tolerancy"
-                value="0"
-            /></label>
+        <p>Tolerancia (min):</p>
+        <label for="entering_tolerancy"
+          >Entrada:
+          <input
+            type="number"
+            id="entering_tolerancy"
+            name="entering_tolerancy"
+            value="0"
+        /></label>
 
-            <label for="leaving_tolerancy"
-                >Salida:
-                <input
-                type="number"
-                id="leaving_tolerancy"
-                name="leaving_tolerancy"
-                value="0"
-                />
-            </label>
-            <button class="basic-button" onclick="search_unpunctuals()">
-                Buscar
-            </button>
+        <label for="leaving_tolerancy"
+          >Salida:
+          <input
+            type="number"
+            id="leaving_tolerancy"
+            name="leaving_tolerancy"
+            value="0"
+          />
+        </label>
+        <button class="basic-button" onclick="search_unpunctuals()">
+          Buscar
+        </button>
+      </nav>
+    </div>
 
-        </nav>
+    <form>
+      <p id="name"></p>
+      <p id="dni"></p>
+      <label for="check_in_time">Entrada:</label>
+      <input type="time" id="check_in_time" name="check_in_time" disabled />
+      <label for="check_out_time">Salida:</label>
+      <input type="time" id="check_out_time" name="check_out_time" disabled />
+    </form>
 
-        <form>
-            <p id="name"></p>
-            <p id="dni"></p>
-            <label for="check_in_time">Entrada:</label>
-            <input type="time" id="check_in_time" name="check_in_time" disabled />
-            <label for="check_out_time">Salida:</label>
-            <input type="time" id="check_out_time" name="check_out_time" disabled />
-        </form>
+    <div>
+      <h3>Registros impuntuales</h3>
 
-        <div>
-            <h3>Registros impuntuales</h3>
+      <ol id="unpunctual_list"></ol>
+    </div>
 
-            <ol id="unpunctual_list"></ol>
-        </div>
-
-        <div>
-            <h3>Registros</h3>
-            <ol id="registers_list"></ol>
-        </div>
-
-        <script src="{{ url_for('static', filename='scripts/employees/employee.js')}}"></script>
-    </body>
-    <footer></footer>
+    <div>
+      <h3>Registros</h3>
+      <ol id="registers_list"></ol>
+    </div>
+    <script defer src="{{ url_for('static', filename='scripts/navbar.js')}}"></script>
+    <script src="{{ url_for('static', filename='scripts/employees/employee.js')}}"></script>
+  </body>
+  <footer></footer>
 </html>

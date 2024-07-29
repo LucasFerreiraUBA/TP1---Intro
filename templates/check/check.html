@@ -7,10 +7,16 @@
     <title>Fichar</title>
 </head>
 <body>
-    <nav>
-        <a class="back-button basic-button" href="/">Volver</a>
-        <h5>Nuevo Registro</h5> 
-    </nav>
+    <i id="toggle-nav">Nuevo Registro</i> 
+    <div  id="navbar">     
+        <nav id="mobile-nav">
+            <a class="back-button basic-button" href="/">Volver</a>
+        </nav>
+        <nav id="full-nav">
+            <a class="back-button basic-button" href="/">Volver</a>
+            <h5>Nuevo Registro</h5> 
+        </nav>
+    </div>
     <div class="center">
       
         <form onsubmit="create_register(event)">
@@ -24,6 +30,7 @@
             <button class="basic-button">Hecho</button>
         </form>
     </div>
+    <script defer src="{{ url_for('static', filename='scripts/navbar.js')}}"></script>
     <script src="{{ url_for('static', filename='scripts/check/check.js')}}"></script>
 </body>
 </html>

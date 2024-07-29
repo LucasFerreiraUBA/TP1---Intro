@@ -14,8 +14,11 @@
 
     --radius: 0.2rem;
 
-    --top-offset: 30vh;
+    --top-offset: 5rem;
 
+    --fullnav-display: none;
+    --toggle-nav-display: flex;
+    --mobilenav-display: flex;
     
     --cols: 4;
     --nav-direction: column;

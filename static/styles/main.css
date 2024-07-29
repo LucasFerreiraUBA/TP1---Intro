@@ -35,17 +35,19 @@ a{
 }
 
 @media (min-width: 220px) {
-    :root {
-        --cols: 1;
-    }
+:root {
+    --cols: 1;
+}
 }
   
 @media (min-width: 900px) {
 :root {
     --cols: 2;
     --nav-direction: row;
-    --top-offset: 10vh;
-    
+    --top-offset:5rem;
+    --toggle-nav-display: none;
+    --fullnav-display: flex;
+    --mobilenav-display: none;
 }
 }
   
