@@ -7,7 +7,13 @@
     <title>Editar Registro</title>
 </head>
 <body>
-    <h2>Datos de Registro</h2>
+    <nav>
+        <h5>Editar Registro</h5>
+        <a class="basic-button back-button" href="/registers">Volver</a>
+    </nav>
+    <div class="center">
+
+   
     <form onsubmit="edit_register(event)">
         <label for="employees">Lista de Empleados:</label>
         <select id="employees" name="employees" required></select>
@@ -26,6 +32,7 @@
 
         <button class="basic-button">Hecho</button>
     </form>
+</div>
     <script>
         const parameters = new URLSearchParams(window.location.search)
         const id = parameters.get("id")
