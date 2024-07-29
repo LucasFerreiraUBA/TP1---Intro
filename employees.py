@@ -1,16 +1,17 @@
 from models import db, Employee, Register
 from flask import  jsonify, request, Blueprint
 from sqlalchemy import or_, and_
-
+import auxiliaries as aux
 
 QUERY_LIMIT = 100
 
 employees = Blueprint('employees', __name__)
 
-
 @employees.route('/api/v1/employees/<int:id>', methods=['GET'])
 def get_employee(id):
-    #Devuelve los datos de un empleado dado un @id.
+    '''
+    Devuelve los datos de un empleado dado un @id.
+    '''
     try:
         employee = Employee.query.get(id)
 
@@ -26,7 +27,9 @@ def get_employee(id):
 
 @employees.route('/api/v1/employees', methods=['GET'])
 def get_employees():
-    #Devuelve una lista de todos los empleados.
+    '''
+    Devuelve una lista de todos los empleados
+    '''
     try:
         query_limit = request.args.get('limit',QUERY_LIMIT, int)
 
@@ -46,7 +49,9 @@ def get_employees():
 
 @employees.route('/api/v1/employees', methods=['POST'])
 def add_new_employee():
-    #Agrega un nuevo empleado con los datos presentes en el body.
+    '''
+    Agrega un nuevo empleado con los datos presentes en el body.
+    '''
 
     first_name = request.json.get('first_name')
     last_name = request.json.get('last_name')
@@ -79,7 +84,9 @@ def add_new_employee():
 
 @employees.route('/api/v1/employees/<int:id>', methods=['DELETE'])
 def delete_employee(id):
-    #Elimina a un empleado dado su @id.
+    '''
+    Elimina a un empleado dado su @id.
+    '''
     try:
         employee = Employee.query.get(id)
 
@@ -96,7 +103,9 @@ def delete_employee(id):
 
 @employees.route('/api/v1/employees/<int:id>', methods=['PUT'])
 def update_employee(id):
-    #Dado un empleado mediante su @id, actualiza sus datos presentes en el body.
+    '''
+    Dado un empleado mediante su @id, actualiza sus datos presentes en el body.
+    '''
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -109,11 +118,11 @@ def update_employee(id):
         check_in_time = request.json.get('check_in_time')
         check_out_time = request.json.get('check_out_time')
 
-        employee.first_name = replace_attr(employee.first_name, first_name)
-        employee.last_name = replace_attr(employee.last_name, last_name)
-        employee.dni = replace_attr(employee.dni, dni)
-        employee.check_in_time = replace_attr(employee.check_in_time, check_in_time)
-        employee.check_out_time = replace_attr(employee.check_out_time, check_out_time)
+        employee.first_name = aux.replace_attr(employee.first_name, first_name)
+        employee.last_name = aux.replace_attr(employee.last_name, last_name)
+        employee.dni = aux.replace_attr(employee.dni, dni)
+        employee.check_in_time = aux.replace_attr(employee.check_in_time, check_in_time)
+        employee.check_out_time = aux.replace_attr(employee.check_out_time, check_out_time)
 
         db.session.commit()
         return jsonify({'success': 'Employee successfully updated', 'employee': employee.toDict()}), 201
@@ -123,7 +132,9 @@ def update_employee(id):
 
 @employees.route('/api/v1/employees/<int:id>/registers/unpunctual/', methods=['GET'])
 def get_employee_unpunctual_registers(id):
-    #Dada una toleancia de entrada y salida, ademas de un @id de empleado, devuelve los registros inpuntuales.
+    '''
+    Dada una toleancia de entrada y salida, ademas de un @id de empleado, devuelve los registros inpuntuales.
+    '''
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -155,16 +166,18 @@ def get_employee_unpunctual_registers(id):
 
 @employees.route('/api/v1/employees/<int:id>/registers/', methods=['GET'])
 def get_employee_registers(id):
-    #Dado un empleado mediante su @id, devuelve sus registros de entrada y salida.
+    '''
+    Dado un empleado mediante su @id, devuelve sus registros de entrada y salida.
+    '''
     try:
         employee = db.session.query(Employee).get(id)
 
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
         
-        register_list = db.session.query(Register) \
-            .filter(Register.employee_id == id)    \
-            .order_by(Register.check_timestamp.desc()).all()
+        register_list = db.session.query(Register)      \
+        .filter(Register.employee_id == id)             \
+        .order_by(Register.check_timestamp.desc()).all()
 
         registers_data = []
         for register in register_list:
@@ -174,10 +187,3 @@ def get_employee_registers(id):
     
     except:
         return jsonify({'error':'An unexpected error had occurred'}), 400
-
-    
-def replace_attr(current, new):
-    
-    if new == None:
-        return current
-    return new

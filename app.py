@@ -14,19 +14,18 @@ PORT = 5000
 app.register_blueprint(registers)
 app.register_blueprint(employees)
 
-# Front routes
+# Front 
 @app.route('/', methods=['GET'])
-def indice():
+def index():
     return render_template('index.html')
 
-
-@app.route('/check', methods=['GET'])
-def front_fichar_empleado():
-    return render_template('sign_up/sign_up.html')
+@app.route('/check_in', methods=['GET'])
+def check_in():
+    return render_template('check_in/check_in.html')
 
 
 @app.route('/employees', methods=['GET'])
-def empleados():
+def all_employees():
     return render_template('employees/employees.html')
 
 
@@ -41,37 +40,36 @@ def front_edit_employee():
 
 
 @app.route('/employees/<int:id>', methods=['GET'])
-def empleado(id):
+def front_get_employee(id):
     return render_template('employees/employee.html')
 
 
 @app.route('/registers', methods=['GET'])
-def front_registros():
+def front_registers():
     return render_template('registers/registers.html')
 
 
 @app.route('/registers/add', methods=['GET'])
-def front_agregar_registro():
+def front_add_registers():
     return render_template('registers/add_register/add_register.html')
 
 @app.route('/registers/unpunctual', methods=['GET'])
 def front_registros_impuntuales():
     return render_template('registers/unpunctual.html')
 
-
 @app.route('/registers/edit', methods=['GET'])
-def front_editar_registro():
+def front_edit_registers():
     return render_template('registers/edit_register/edit_register.html')
 
 
 @app.errorhandler(404)
-def front_error(e):
+def error_page(error):
     return render_template('page_not_found/page_not_found.html')
 
 db.init_app(app)
 
 if __name__ == '__main__':
     with app.app_context():
-        # db.drop_all()
+        #db.drop_all()
         db.create_all()
     app.run(debug=True, port=PORT)

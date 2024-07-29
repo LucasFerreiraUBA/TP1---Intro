@@ -3,8 +3,14 @@
 ## Integrantes 
 
 - Lucas Ferreira 
-- Jose Luis Jarro 
+- José Luis Jarro 
 - Juan Chaile
 
-## Proyecto
-Interfaz de empleados. Podes agregar, eliminar, editar empleados y sus registros. 
+##  Instalación
+
+### Instalar venv
+- pip install virtualenv
+### Ejecutar en la carpeta:
+- virtualenv venv
+- source venv/bin/activate
+- pip install -r requirements.txt
