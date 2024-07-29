@@ -54,6 +54,10 @@ def front_registros():
 def front_agregar_registro():
     return render_template('registers/add_register/add_register.html')
 
+@app.route('/registers/unpunctual', methods=['GET'])
+def front_registros_impuntuales():
+    return render_template('registers/unpunctual.html')
+
 
 @app.route('/registers/edit', methods=['GET'])
 def front_editar_registro():

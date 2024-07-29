@@ -4,17 +4,26 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
-        <title>Registros</title>
+        <title>Desviaciones</title>
     </head>
     <body>
         <nav>
-            <a class="back-button basic-button" href="/">Volver</a>
-            <a class="back-button basic-button" href="/registers/unpunctual">Impuntualidades</a>
+            <a class="back-button basic-button" href="/registers">Volver</a>
             <a class="add-button basic-button" href="registers/add">Agregar</a>
             <div>
-                <label for="num_registers">Cantidad de Registros: 0 -</label>
-                <input type="number" id="num_registers" name="num_registers" placeholder="100">
-                <button onclick="search_registers()">Hecho</button>
+                <label for="tolerancy-in">Tolerancia de entrada(min): 0 - </label>
+                <input type="number" id="tolerancy-in" name="tolerancy-in" placeholder="1" value="0" required>
+                <button class="basic-button" onclick="search_registers()">Hecho</button>
+            </div>
+            <div>
+                <label for="tolerancy-out">Tolerancia de salida(min): 0 - </label>
+                <input type="number" id="tolerancy-out" name="tolerancy-out" placeholder="1" value="0" required>
+                <button class="basic-button" onclick="search_registers()">Hecho</button>
+            </div>
+            <div>
+                <label for="num_registers">Cantidad de registros: 0 - </label>
+                <input type="number" id="num_registers" name="num_registers" value="100" required>
+                <button class="basic-button" onclick="search_registers()">Hecho</button>
             </div>
         </nav>
    
@@ -23,9 +32,11 @@
 
         <script>
             function search_registers() {
-                const num = document.getElementById("num_registers").value
+                const num_registers = document.getElementById("num_registers").value
+                const tolerancy_out = document.getElementById("tolerancy-out").value
+                const tolerancy_in = document.getElementById("tolerancy-in").value
                 document.getElementById("registers_list").innerHTML = ""
-                fetch(`http://localhost:5000/api/v1/registers?limit=${num}`)
+                fetch(`http://localhost:5000/api/v1/registers/unpunctual?limit=${num_registers}&tolerancy_in=${tolerancy_in}&tolerancy_out=${tolerancy_out}`)
                 .then((res) => res.json())
                 .then(handle_data)
                 .catch((error) => console.log("error:", error))
@@ -75,13 +86,10 @@
                     
                     card.setAttribute("id", `${register.id}`)
                     card.setAttribute("class","register-card")
-
                     register_date.setAttribute("type", "date")
                     register_date.setAttribute("disabled", "disabled")
-
                     register_time.setAttribute("type", "time")
                     register_time.setAttribute("disabled", "disabled")
-
                     edit_button.setAttribute("onclick", `edit_register(${register.id})`)
                     delete_button.setAttribute("onclick", `delete_register(${register.id})`)
 
@@ -93,15 +101,14 @@
                     let pill_class;
                     register.is_check_in ? pill_class = "check_in" : pill_class = "check_out";
                     register_is_check_in.setAttribute("class", `${pill_class}`)
-
+                    
                     let deviation = Math.trunc(register.deviation_seconds / 60);
                     const deviation_mark = document.createElement("p")
                     deviation_mark.innerText = `${deviation} min`
-                    
+
                     edit_button.innerText = "Editar"
                     delete_button.innerText = "Borrar"
 
-   
                     card.append(register_name)
                     card.append(register_date)
                     card.append(register_time)
@@ -113,7 +120,7 @@
                 }
             }
 
-            fetch("http://localhost:5000/api/v1/registers")
+            fetch("http://localhost:5000/api/v1/registers/unpunctual")
             .then((res) => res.json())
             .then(handle_data)
             .catch((error) => console.log("error:", error))
