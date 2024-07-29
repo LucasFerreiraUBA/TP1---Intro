@@ -181,6 +181,9 @@ nav button{
 nav label{
     white-space: nowrap;
 }
+nav h5{
+    font-size: large;
+}
 
 
 form{
