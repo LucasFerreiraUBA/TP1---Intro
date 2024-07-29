@@ -63,7 +63,7 @@
                 for (const register of data) {
                     const employee = register.employee
                     const card = document.createElement("div")
-                    const register_name = document.createElement("p")
+                    const register_name = document.createElement("h6")
                     const register_date = document.createElement("input")
                     const register_time = document.createElement("input")
                     const register_is_check_in = document.createElement("p")
@@ -71,6 +71,7 @@
                     const delete_button = document.createElement("button")
                     
                     card.setAttribute("id", `${register.id}`)
+                    card.setAttribute("class","register-card")
                     register_date.setAttribute("type", "date")
                     register_date.setAttribute("disabled", "disabled")
                     register_time.setAttribute("type", "time")
@@ -82,6 +83,11 @@
                     register_date.value = register.timestamp.split("T")[0]
                     register_time.value = register.timestamp.split("T")[1].slice(0,5)
                     register_is_check_in.innerText = print_is_input(register.is_check_in)
+
+                    let pill_class;
+                    register.is_check_in ? pill_class = "check_in" : pill_class = "check_out";
+                    register_is_check_in.setAttribute("class", `${pill_class}`)
+                    
                     edit_button.innerText = "Editar"
                     delete_button.innerText = "Borrar"
 

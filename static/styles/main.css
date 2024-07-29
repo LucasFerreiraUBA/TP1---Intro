@@ -8,13 +8,14 @@
 
 html{
     min-height: 100vh;
-    margin-inline: 2rem;
+    margin-inline: clamp(1rem, 5%, 8%);
 }
 main{
     display: grid;
     padding: 2rem;
     place-content: center;
     min-height: 90vh;
+
 }
 .options{
     width: 100%;
@@ -26,4 +27,27 @@ main{
 
 a{
     text-decoration: none;
+}
+@media (min-width: 220px) {
+    :root {
+        --cols: 1;
+    }
+}
+  
+@media (min-width: 900px) {
+:root {
+    --cols: 2;
+}
+}
+  
+@media (min-width: 1200px) {
+:root {
+    --cols: 4;
+}
+}
+
+@media (min-width: 1600px) {
+    :root {
+        --cols: 5;
+    }
 }
