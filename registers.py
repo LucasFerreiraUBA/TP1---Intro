@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request
 from models import Register, Employee, db
 from datetime import datetime, timedelta
 import auxiliaries as aux
+from sqlalchemy import or_, and_
+
 
 registers = Blueprint('registers', __name__)
 
@@ -15,10 +17,7 @@ def get_registers():
     Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
     '''
     try:
-        query_limit = request.args.get('limit')
-        
-        if not query_limit:
-            query_limit = QUERY_LIMIT
+        query_limit = request.args.get('limit', QUERY_LIMIT)
         
         registers_list = db.session.query(Register).limit(query_limit)
 
@@ -158,3 +157,40 @@ def update_register(id):
         return jsonify({'success': 'Register updated successfully'}), 201
     except:
         return jsonify({'message': 'Some error has occurred'}), 400
+
+@registers.route('/api/v1/registers/unpunctual', methods=['GET'])
+def get_employee_unpunctual_registers():
+    #Dada una toleancia de entrada y salida, devuelve los registros inpuntuales.
+    try:
+        query_limit = request.args.get('limit', QUERY_LIMIT, int)
+        
+        entering_tolerancy = request.args.get('tolerancy_in', 0, int)
+        leaving_tolerancy = request.args.get('tolerancy_out', 0, int)
+  
+        entering_tolerancy_seconds = entering_tolerancy * 60
+        leaving_tolerancy_seconds = leaving_tolerancy * 60
+
+        register_list = db.session.query(Register).filter(
+            or_(
+            and_(Register.is_check_in == True, Register.deviation_seconds > entering_tolerancy_seconds),
+            and_(Register.is_check_in == False, Register.deviation_seconds < leaving_tolerancy_seconds)
+            )).order_by(Register.check_timestamp.desc()).limit(query_limit).all()
+
+        registers_data = []
+      
+        for register in register_list:
+            employee = db.session.query(Employee).get(register.employee_id)
+            register_data = {
+                'id': register.id,
+                'timestamp': register.check_timestamp.isoformat(),
+                'employee': employee.toDict(),
+                'is_check_in': register.is_check_in,
+                'deviation_seconds': register.deviation_seconds,
+            }
+            registers_data.append(register_data)
+
+
+        return jsonify(registers_data), 201
+    except Exception as error:
+        print(error)
+        return jsonify({'error':'An unexpected error had occurred'}), 400

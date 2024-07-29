@@ -19,7 +19,6 @@ app.register_blueprint(employees)
 def index():
     return render_template('index.html')
 
-
 @app.route('/check_in', methods=['GET'])
 def check_in():
     return render_template('check_in/check_in.html')
@@ -31,32 +30,35 @@ def all_employees():
 
 
 @app.route('/employees/add', methods=['GET'])
-def create_employee():
+def front_create_employee():
     return render_template('employees/add_employee/add_employee.html')
 
 
 @app.route('/employees/edit', methods=['GET'])
-def edit_employee():
+def front_edit_employee():
     return render_template('employees/edit_employee/edit_employee.html')
 
 
 @app.route('/employees/<int:id>', methods=['GET'])
-def employee(id):
+def front_get_employee(id):
     return render_template('employees/employee.html')
 
 
 @app.route('/registers', methods=['GET'])
-def all_registers():
+def front_registers():
     return render_template('registers/registers.html')
 
 
 @app.route('/registers/add', methods=['GET'])
-def add_register():
+def front_add_registers():
     return render_template('registers/add_register/add_register.html')
 
+@app.route('/registers/unpunctual', methods=['GET'])
+def front_registros_impuntuales():
+    return render_template('registers/unpunctual.html')
 
 @app.route('/registers/edit', methods=['GET'])
-def edit_register():
+def front_edit_registers():
     return render_template('registers/edit_register/edit_register.html')
 
 

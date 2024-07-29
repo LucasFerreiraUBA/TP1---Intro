@@ -31,10 +31,7 @@ def get_employees():
     Devuelve una lista de todos los empleados
     '''
     try:
-        query_limit = request.args.get('limit')
-
-        if not query_limit:
-            query_limit = QUERY_LIMIT
+        query_limit = request.args.get('limit',QUERY_LIMIT, int)
 
         all_employees = Employee.query.order_by(Employee.last_name.asc()).limit(query_limit).all()
         employees_list = []

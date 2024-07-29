@@ -1,0 +1,52 @@
+@import url(variables.css);
+
+.main-button{
+    background: var(--regular);
+    color: var(--light);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    padding-inline: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.main-button:hover{
+    background-color: var(--light-u);
+    color: var(--dark);
+}
+.main-button:active{
+    background-color: var(--light-u);
+    color: var(--dark);
+    scale: 0.95;
+}
+
+
+
+
+.add-button{
+    background-color: var(--secondary);
+    color: var(--dark);
+}
+
+.back-button{
+    background-color: var(--regular);
+    color: var(--light);
+}
+
+.back-button:hover{
+    transform: scale(1.03);
+}
+
+.basic-button{
+    border-radius: var(--radius);
+    padding: 0.5rem;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.basic-button:hover{
+    transform: scale(1.03);
+}

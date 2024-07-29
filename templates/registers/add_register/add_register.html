@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css')}}">
+    <title>Agregar Registro</title>
+</head>
+<body>
+    <h2>Nuevo Registro</h2>
+    <div class="center">
+
+   
+    <form onsubmit="create_register(event)">
+        <label for="employees">Lista de Empleados:</label>
+        <select id="employees" name="employees" required></select>
+
+        <label for="date_edited">Fecha</label>
+        <input type="date" id="date_edited" name="date_edited" required>
+
+        <label for="timestamp">Hora de Llegada/Salida</label>
+        <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
+
+        <button>Hecho</button>
+    </form>
+    </div>
+    <script>
+        function handle_get_employees_response(data) {
+            const employees = document.getElementById("employees")
+            for (const item of data) {
+                const option = document.createElement("option")
+                option.innerText = item.last_name + ", " + item.first_name
+                option.setAttribute("value", `${item.id}`)
+                option.setAttribute("id", `${item.id}`)
+                employees.append(option);
+            }
+        }
+
+        fetch(`http://localhost:5000/api/v1/employees`, {method:"GET"})
+            .then((res) => res.json())
+            .then(handle_get_employees_response)
+            .catch((error) => console.log("error", error))
+
+        function handle_response(data) {
+            if (data.success) {
+                alert("Registro agregado")
+            }else {
+                alert("Error al agregar el registro")
+            }
+        }
+
+        function create_register(event) {
+            event.preventDefault()
+            const formData = new FormData(event.target)
+            const employee_id = formData.get("employees")
+            const timestamp = formData.get("timestamp")
+            const date_edited = formData.get("date_edited")
+            const check_timestamp = `${date_edited}T${timestamp}`
+            
+            fetch(`http://localhost:5000/api/v1/registers`,
+            {
+                method:"POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    employee_id: employee_id,
+                    timestamp: check_timestamp })
+            })
+            .then((res) => res.json())
+            .then(handle_response)
+            .catch((error) => console.log("error", error))
+        }
+    </script>
+</body>
+</html>
