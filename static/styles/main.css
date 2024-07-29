@@ -2,21 +2,28 @@
 
 /* Reglas generales */
 @import url(general.css);
-@import url(botones.css);
-@import url(footer.css);
+@import url(buttons.css);
+@import url(colors.css);
+
+
 html{
     min-height: 100vh;
+    margin-inline: 2rem;
 }
 main{
-    background-color: #e7e9eb;
     display: grid;
+    padding: 2rem;
     place-content: center;
     min-height: 90vh;
 }
-.opciones{
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 2em;
-    padding: 10px;
+.options{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 1rem;
+}
+
+a{
+    text-decoration: none;
 }

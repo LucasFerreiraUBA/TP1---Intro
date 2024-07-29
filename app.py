@@ -20,7 +20,7 @@ def indice():
     return render_template('index.html')
 
 
-@app.route('/fichar', methods=['GET'])
+@app.route('/check', methods=['GET'])
 def front_fichar_empleado():
     return render_template('sign_up/sign_up.html')
 
@@ -30,32 +30,32 @@ def empleados():
     return render_template('employees/employees.html')
 
 
-@app.route('/empleados/agregar', methods=['GET'])
+@app.route('/employees/add', methods=['GET'])
 def front_create_employee():
     return render_template('employees/add_employee/add_employee.html')
 
 
-@app.route('/empleados/editar', methods=['GET'])
+@app.route('/employees/edit', methods=['GET'])
 def front_edit_employee():
     return render_template('employees/edit_employee/edit_employee.html')
 
 
-@app.route('/empleados/<int:id>', methods=['GET'])
+@app.route('/employees/<int:id>', methods=['GET'])
 def empleado(id):
     return render_template('employees/employee.html')
 
 
-@app.route('/registros', methods=['GET'])
+@app.route('/registers', methods=['GET'])
 def front_registros():
     return render_template('registers/registers.html')
 
 
-@app.route('/registros/agregar', methods=['GET'])
+@app.route('/registers/add', methods=['GET'])
 def front_agregar_registro():
     return render_template('registers/add_register/add_register.html')
 
 
-@app.route('/registros/editar', methods=['GET'])
+@app.route('/registers/edit', methods=['GET'])
 def front_editar_registro():
     return render_template('registers/edit_register/edit_register.html')
 

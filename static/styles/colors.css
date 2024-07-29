@@ -1,0 +1,11 @@
+:root{
+    --bg: rgb(227, 222, 222);
+    --regular: rgb(2, 83, 110);
+    --accent: rgb(215, 243, 246);
+    --seconday: rgb(74, 184, 126);
+
+    --dark: rgb(35, 35, 35);
+    --light: rgb(227,222,222);
+    --light-u: rgb(255, 255, 255);
+    --text-bg: var(--dark);
+}
