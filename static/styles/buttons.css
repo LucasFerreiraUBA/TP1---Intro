@@ -45,6 +45,7 @@
     padding: 0.5rem;
     border: none;
     transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center;
 }
 
 .basic-button:hover{
