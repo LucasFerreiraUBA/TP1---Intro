@@ -7,14 +7,15 @@
         <title>Empleados</title>
     </head>
     <body>
-        <div>
-            <a href="empleados/agregar">Agregar</a>
-        </div>
-        <div>
-            <label for="num_employeers">Cantidad de empleados: 0 -</label>
-            <input type="number" id="num_employeers" name="num_employeers" placeholder="100">
-            <button onclick="search_employees()">Hecho</button>
-        </div>
+        <nav>
+            <a class="back-button basic-button" href="/">Volver</a>
+            <a class="add-button basic-button" href="empleados/agregar">Agregar</a>
+            <div>
+                <label for="num_employeers">Cantidad de empleados: 0 -</label>
+                <input type="number" id="num_employeers" name="num_employeers" placeholder="100">
+                <button class="basic-button" onclick="search_employees()">Hecho</button>
+            </div>
+        </nav>
 
         <h1>Empleados:</h1>
         <ul id="employees_list"></ul>
@@ -62,9 +63,12 @@
                     const edit_button = document.createElement("button")
 
                     row.setAttribute("id", `${employee.id}`)
-                    row.setAttribute("class","employee-pill")
+                    row.setAttribute("class","employee-card")
                     delete_button.setAttribute("onclick", `delete_employee(${employee.id})`) 
                     edit_button.setAttribute("onclick", `edit_employee(${employee.id})`)
+
+                    delete_button.setAttribute("class", "basic-button") 
+                    edit_button.setAttribute("class", "basic-button") 
 
                     employee_name.innerText = `${employee.last_name}, ${employee.first_name}`
                     edit_button.innerText = "Editar"

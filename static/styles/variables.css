@@ -1,8 +1,8 @@
 :root{
     --bg: rgb(227, 222, 222);
     --regular: rgb(2, 83, 110);
-    --accent: rgb(215, 243, 246);
-    --secondary: rgb(74, 184, 126);
+    --accent: rgb(181, 153, 128);
+    --secondary: rgb(250, 177, 23);
 
     --out: rgb(255, 154, 52);
     --in: rgb(255, 88, 37);
@@ -16,4 +16,6 @@
 
     
     --cols: 4;
+    --nav-direction: column;
+    box-sizing: border-box;
 }

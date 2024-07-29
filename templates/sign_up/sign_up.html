@@ -7,17 +7,23 @@
     <title>Fichar</title>
 </head>
 <body>
-    <h2>Nuevo Registro</h2>
-    <form onsubmit="create_register(event)">
-        <label for="employees">Lista de Empleados:</label>
-        <select id="employees" name="employees" required>
-        </select>
-
-        <label for="timestamp">Hora de Llegada/Salida</label>
-        <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
-       
-        <button>Hecho</button>
-    </form>
+    <nav>
+        <a class="back-button basic-button" href="/">Volver</a>
+        <h5>Nuevo Registro</h5> 
+    </nav>
+    <div class="center">
+      
+        <form onsubmit="create_register(event)">
+            <label for="employees">Lista de Empleados:</label>
+            <select id="employees" name="employees" required>
+            </select>
+            
+            <label for="timestamp">Hora de Llegada/Salida</label>
+            <input type="time" id="timestamp" name="timestamp" placeholder="10:00" required>
+            
+            <button class="basic-button">Hecho</button>
+        </form>
+    </div>
     <script>
         function handle_get_response(data) {
             const employees = document.getElementById("employees")

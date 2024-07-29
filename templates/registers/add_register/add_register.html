@@ -8,6 +8,9 @@
 </head>
 <body>
     <h2>Nuevo Registro</h2>
+    <div class="center">
+
+   
     <form onsubmit="create_register(event)">
         <label for="employees">Lista de Empleados:</label>
         <select id="employees" name="employees" required></select>
@@ -20,6 +23,7 @@
 
         <button>Hecho</button>
     </form>
+    </div>
     <script>
         function handle_get_employees_response(data) {
             const employees = document.getElementById("employees")

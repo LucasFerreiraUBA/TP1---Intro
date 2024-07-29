@@ -7,14 +7,16 @@
         <title>Registros</title>
     </head>
     <body>
-        <div>
-            <a href="registros/agregar">Agregar</a>
-        </div>
-        <div>
-            <label for="num_registers">Cantidad de Registros: 0 -</label>
-            <input type="number" id="num_registers" name="num_registers" placeholder="100">
-            <button onclick="search_registers()">Hecho</button>
-        </div>
+        <nav>
+            <a class="back-button basic-button" href="/">Volver</a>
+            <a class="add-button basic-button" href="registers/add">Agregar</a>
+            <div>
+                <label for="num_registers">Cantidad de Registros: 0 -</label>
+                <input type="number" id="num_registers" name="num_registers" placeholder="100">
+                <button onclick="search_registers()">Hecho</button>
+            </div>
+        </nav>
+   
         <h1>Registros:</h1>
         <ul id="registers_list"></ul>
 
@@ -48,7 +50,7 @@
             }
 
             function edit_register(id) {
-                window.location.href = `registros/editar?id=${id}`
+                window.location.href = `registers/edit?id=${id}`
             }
 
             function print_is_input(is_check_in) {
@@ -79,7 +81,7 @@
                     edit_button.setAttribute("onclick", `edit_register(${register.id})`)
                     delete_button.setAttribute("onclick", `delete_register(${register.id})`)
 
-                    register_name.innerText = `Fichaje: ${employee.last_name}, ${employee.first_name}`
+                    register_name.innerText = `${employee.last_name}, ${employee.first_name}`
                     register_date.value = register.timestamp.split("T")[0]
                     register_time.value = register.timestamp.split("T")[1].slice(0,5)
                     register_is_check_in.innerText = print_is_input(register.is_check_in)
