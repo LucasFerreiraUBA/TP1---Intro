@@ -63,3 +63,7 @@ a{
 input[type="number"]{
     max-width: 4rem;
 }
+
+#registers_panel {
+    margin-top: 50px;
+}
