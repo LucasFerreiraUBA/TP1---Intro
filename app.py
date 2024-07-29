@@ -19,9 +19,9 @@ app.register_blueprint(employees)
 def index():
     return render_template('index.html')
 
-@app.route('/check_in', methods=['GET'])
-def check_in():
-    return render_template('check_in/check_in.html')
+@app.route('/check', methods=['GET'])
+def check():
+    return render_template('check/check.html')
 
 
 @app.route('/employees', methods=['GET'])
