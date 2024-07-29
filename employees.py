@@ -1,7 +1,7 @@
 from models import db, Employee, Register
 from flask import  jsonify, request, Blueprint
 from sqlalchemy import or_, and_
-import auxilaires as aux
+import auxiliaries as aux
 
 QUERY_LIMIT = 100
 

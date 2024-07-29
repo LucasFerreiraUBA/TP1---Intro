@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from models import Register, Employee, db
 from datetime import datetime, timedelta
-import auxilaires as aux
+import auxiliaries as aux
 
 registers = Blueprint('registers', __name__)
 
