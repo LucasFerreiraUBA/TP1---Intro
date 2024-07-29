@@ -20,42 +20,42 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/fichar', methods=['GET'])
+@app.route('/check_in', methods=['GET'])
 def check_in():
     return render_template('check_in/check_in.html')
 
 
-@app.route('/empleados', methods=['GET'])
+@app.route('/employees', methods=['GET'])
 def all_employees():
     return render_template('employees/employees.html')
 
 
-@app.route('/empleados/agregar', methods=['GET'])
+@app.route('/employees/add', methods=['GET'])
 def create_employee():
     return render_template('employees/add_employee/add_employee.html')
 
 
-@app.route('/empleados/editar', methods=['GET'])
+@app.route('/employees/edit', methods=['GET'])
 def edit_employee():
     return render_template('employees/edit_employee/edit_employee.html')
 
 
-@app.route('/empleados/<int:id>', methods=['GET'])
+@app.route('/employees/<int:id>', methods=['GET'])
 def employee(id):
     return render_template('employees/employee.html')
 
 
-@app.route('/registros', methods=['GET'])
+@app.route('/registers', methods=['GET'])
 def all_registers():
     return render_template('registers/registers.html')
 
 
-@app.route('/registros/agregar', methods=['GET'])
+@app.route('/registers/add', methods=['GET'])
 def add_register():
     return render_template('registers/add_register/add_register.html')
 
 
-@app.route('/registros/editar', methods=['GET'])
+@app.route('/registers/edit', methods=['GET'])
 def edit_register():
     return render_template('registers/edit_register/edit_register.html')
 
@@ -68,5 +68,6 @@ db.init_app(app)
 
 if __name__ == '__main__':
     with app.app_context():
+        #db.drop_all()
         db.create_all()
     app.run(debug=True, port=PORT)
