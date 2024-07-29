@@ -10,7 +10,9 @@ QUERY_LIMIT = 100
 
 @registers.route('/api/v1/registers', methods=['GET'])
 def get_registers():
-    #Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
+    '''
+    Se obtinen todos los registros. Si no se espicifico mediante un param@limit, sera limitado por un valor default.
+    '''
     try:
         query_limit = request.args.get('limit')
         
@@ -38,7 +40,9 @@ def get_registers():
 
 @registers.route('/api/v1/registers/<int:id>', methods=['GET'])
 def get_register(id):
-    #Obtiene los detalles de un registro dado si @id 
+    '''
+    Obtiene los detalles de un registro dado su @id 
+    '''
     try:
         register = Register.query.get(id)
         employee = db.session.query(Employee).get(register.employee_id)
@@ -59,10 +63,12 @@ def get_register(id):
 
 @registers.route('/api/v1/registers', methods=['POST'])
 def add_new_register():
-    #Agrega un nuevo registro con los datos que hay en el body.
-    #Si el registro ya existe, lo actualiza siempre y cuando:
-    #   Si el registro es proximo al horario de entrada: Cuando no es posterior al vigente.
-    #   Si el registro es  proximo al horario de salida: Cuando es posterior al vigente.
+    '''
+    Agrega un nuevo registro con los datos que hay en el body.
+    Si el registro ya existe, lo actualiza siempre y cuando:
+    Si el registro es proximo al horario de entrada: Cuando no es posterior al vigente.
+    Si el registro es  proximo al horario de salida: Cuando es posterior al vigente.
+    '''
     try:
         timestamp = request.json.get('timestamp')
         employee_id = int(request.json.get('employee_id'))
@@ -108,7 +114,9 @@ def add_new_register():
 
 @registers.route('/api/v1/registers/<int:id>', methods=['DELETE'])
 def delete_register(id):
-    #Elimina un registro dado un @id
+    '''
+    Elimina un registro dado un @id
+    '''
     try:
         register = db.session.query(Register).get(id)
         db.session.delete(register)
@@ -121,7 +129,9 @@ def delete_register(id):
 
 @registers.route('/api/v1/registers/<int:id>', methods=['PUT'])
 def update_register(id):
-    #Actualiza los datos de un registro dado su @id con los datos del body.
+    '''
+    Actualiza los datos de un registro dado su @id con los datos del body.
+    '''
     try:
         register = Register.query.get(id)
 
@@ -150,30 +160,39 @@ def update_register(id):
 
 
 def get_register_type(check_timestamp: datetime, employee: Employee):
-    # Dado una hora de fichaje, y un employee devuelve si es una entrada y la diferencia en segundos
-
-    right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
-    right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
-
-    delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
-    delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
-
+    '''
+    Dado una hora de fichaje, y un employee devuelve si es una entrada y la diferencia en segundos
+    '''
+    delta_check_in, delta_check_out = difference_time(employee, check_timestamp)
     is_check_in = abs(delta_check_in) < abs(delta_check_out)
-
     deviation_seconds = delta_check_in if is_check_in else delta_check_out
+
     return is_check_in, deviation_seconds
 
 def replace_attr(current, new):
+    '''
+    Devuelve el valor nuevo solo si no esta vacio.
+    '''
     if new == None:
         return current
     return new
 
 def deviation(employee: Employee, check_timestamp: datetime, is_check_in: bool):
+    '''
+    Retorna la diferencia de tiempo entre el fichaje y el horario de entrada/salida.
+    '''
+    delta_check_in, delta_check_out = difference_time(employee, check_timestamp)
 
+    return delta_check_in if is_check_in else delta_check_out
+
+def difference_time(employee: Employee, check_timestamp: datetime):
+    '''
+    Calcula las diferencia de tiempo entre el fichaje y los horarios de entrada/salida
+    '''
     right_check_in_datetime = datetime.combine(check_timestamp.date(), employee.check_in_time)
     right_check_out_datetime = datetime.combine(check_timestamp.date(), employee.check_out_time)
 
     delta_check_in = check_timestamp.timestamp() - right_check_in_datetime.timestamp()
     delta_check_out = check_timestamp.timestamp() - right_check_out_datetime.timestamp()
 
-    return delta_check_in if is_check_in else delta_check_out
+    return delta_check_in, delta_check_out

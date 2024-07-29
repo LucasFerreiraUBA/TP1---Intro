@@ -2,15 +2,15 @@ from models import db, Employee, Register
 from flask import  jsonify, request, Blueprint
 from sqlalchemy import or_, and_
 
-
 QUERY_LIMIT = 100
 
 employees = Blueprint('employees', __name__)
 
-
 @employees.route('/api/v1/employees/<int:id>', methods=['GET'])
 def get_employee(id):
-    #Devuelve los datos de un empleado dado un @id.
+    '''
+    Devuelve los datos de un empleado dado un @id.
+    '''
     try:
         employee = Employee.query.get(id)
 
@@ -26,7 +26,9 @@ def get_employee(id):
 
 @employees.route('/api/v1/employees', methods=['GET'])
 def get_employees():
-    #Devuelve una lista de todos los empleados.
+    '''
+    Devuelve una lista de todos los empleados
+    '''
     try:
         query_limit = request.args.get('limit')
 
@@ -49,7 +51,9 @@ def get_employees():
 
 @employees.route('/api/v1/employees', methods=['POST'])
 def add_new_employee():
-    #Agrega un nuevo empleado con los datos presentes en el body.
+    '''
+    Agrega un nuevo empleado con los datos presentes en el body.
+    '''
 
     first_name = request.json.get('first_name')
     last_name = request.json.get('last_name')
@@ -82,7 +86,9 @@ def add_new_employee():
 
 @employees.route('/api/v1/employees/<int:id>', methods=['DELETE'])
 def delete_employee(id):
-    #Elimina a un empleado dado su @id.
+    '''
+    Elimina a un empleado dado su @id.
+    '''
     try:
         employee = Employee.query.get(id)
 
@@ -99,7 +105,9 @@ def delete_employee(id):
 
 @employees.route('/api/v1/employees/<int:id>', methods=['PUT'])
 def update_employee(id):
-    #Dado un empleado mediante su @id, actualiza sus datos presentes en el body.
+    '''
+    Dado un empleado mediante su @id, actualiza sus datos presentes en el body.
+    '''
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -126,7 +134,9 @@ def update_employee(id):
 
 @employees.route('/api/v1/employees/<int:id>/registers/unpunctual/', methods=['GET'])
 def get_employee_unpunctual_registers(id):
-    #Dada una toleancia de entrada y salida, ademas de un @id de empleado, devuelve los registros inpuntuales.
+    '''
+    Dada una toleancia de entrada y salida, ademas de un @id de empleado, devuelve los registros inpuntuales.
+    '''
     try:
         employee = db.session.query(Employee).get(id)
 
@@ -158,16 +168,18 @@ def get_employee_unpunctual_registers(id):
 
 @employees.route('/api/v1/employees/<int:id>/registers/', methods=['GET'])
 def get_employee_registers(id):
-    #Dado un empleado mediante su @id, devuelve sus registros de entrada y salida.
+    '''
+    Dado un empleado mediante su @id, devuelve sus registros de entrada y salida.
+    '''
     try:
         employee = db.session.query(Employee).get(id)
 
         if not employee:
             return jsonify({'message': 'Employee not found'}), 404
         
-        register_list = db.session.query(Register) \
-            .filter(Register.employee_id == id)    \
-            .order_by(Register.check_timestamp.desc()).all()
+        register_list = db.session.query(Register)      \
+        .filter(Register.employee_id == id)             \
+        .order_by(Register.check_timestamp.desc()).all()
 
         registers_data = []
         for register in register_list:
@@ -180,7 +192,6 @@ def get_employee_registers(id):
 
     
 def replace_attr(current, new):
-    
     if new == None:
         return current
     return new
